@@ -12,7 +12,7 @@ function todos(state = initialState, action) {
         case cartConstain.FETCH_CART:
             return {
                 ...state,
-                carts: action.payload.data
+                carts: action.payload
             }
         case cartConstain.GET_USER:
             return {

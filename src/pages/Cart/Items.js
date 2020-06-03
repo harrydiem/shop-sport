@@ -16,7 +16,6 @@ function Items() {
     //const user = useSelector(state => state[MODULE_CART].user)
     // const dispatch = useDispatch()
     console.log("Store->", cartList)
-    // console.log("State->", cartsItem)
     function handleChange(value) {
         console.log(`selected ${value}`);
     }
@@ -24,14 +23,14 @@ function Items() {
     function showItems() {
         let resutl = ''
         const items = cartList
-        if (items.cartItemsDTO) {
-            resutl = items.cartItemsDTO.map((item, index) => {
+        if (cartList.cartItemsDTO) {
+            resutl = cartList.cartItemsDTO.map((item, index) => {
                 return (
                     <tr key={index}>
                         <td className="romove-item"><Link to={"/detail/" + item.productId} title="cancel" className="icon"><i className="fa fa-trash-o" /></Link></td>
                         <td className="cart-image">
                             <a className="entry-thumbnail" href="/detail">
-                                <img src={item.image} alt={item.productName} />
+                                <img src={"http://localhost:5000" + item.productImageDTO.url} alt={item.productName} />
                             </a>
                         </td>
                         <td className="cart-product-name-info">
@@ -62,20 +61,20 @@ function Items() {
                             <div className="row">
                                 MÀU:
                             <Select size="middle" defaultValue={item.color} style={{ width: 100, margin: "0 0 5px 10px" }} onChange={handleChange}>
-                                    <Option value="Xanh">Xanh</Option>
-                                    <Option value="Đỏ">Đỏ</Option>
+                                    <Option value={item.color}>{item.color}</Option>
+                                    {/* <Option value="Đỏ">Đỏ</Option>
                                     <Option value="Trắng">Trắng</Option>
                                     <Option value="Vàng" disabled>
                                         Vàng
-                                </Option>
+                                </Option> */}
                                 </Select></div>
                             <div className="row">
                                 SIZE :
                             <Select size="middle" defaultValue={item.size} style={{ width: 100, fontWeight: "bold", margin: "0 0 0 10px" }} onChange={handleChange}>
-                                    <Option value="S">S</Option>
-                                    <Option value="L">L</Option>
+                                    <Option value={item.size}>{item.size}</Option>
+                                    {/* <Option value="L">L</Option>
                                     <Option value="XL" disabled>XL</Option>
-                                    <Option value="XXL">XZL</Option>
+                                    <Option value="XXL">XZL</Option> */}
                                 </Select>
                             </div>
                             {/* <a href=" " className="product-edit">Size</a> */}
@@ -97,7 +96,7 @@ function Items() {
                                 onChange={onChange} />
                         </td>
                         <td className="cart-product-sub-total"><span className="cart-sub-total-price">{formatNumber(item.price, '.', '.')} VND</span></td>
-                        <td className="cart-product-grand-total"><span className="cart-grand-total-price">{formatNumber(item.totalPrice, '.', '.')} VND</span></td>
+                        <td className="cart-product-grand-total"><span className="cart-grand-total-price">{formatNumber(item.price * item.quantity, '.', '.')} VND</span></td>
                     </tr>
                 )
             })

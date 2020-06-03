@@ -12,6 +12,8 @@ import formatNumber from '../../common/utils/formatNumber'
 import IMG1 from '../../common/assets/images/products/gym-black.jpg'
 import IMG2 from '../../common/assets/images/products/yoga-pink.jpg'
 import IMG3 from '../../common/assets/images/products/NB-shoes-black.jpg'
+import { fetchLoading } from '../../common/utils/effect'
+import { message } from 'antd'
 
 
 const dataCarts = {
@@ -66,7 +68,7 @@ function Cart(props) {
     // const { } = props
     const cartList = useSelector(state => state[MODULE_CART].carts)
     const dispatch = useDispatch()
-    console.log("Từ API up lên Store ", cartList)
+    console.log("Store Carts: ", cartList)
     // console.log("User API trả về: ", user)
 
     function clickCheckout() {
@@ -74,37 +76,31 @@ function Cart(props) {
     }
 
     useEffect(() => {
-        // call api o day
-        // let result = await fetchData()
-        // dispatch(actionCarts.FETCHCARTS(result.data))
-        // dispatch(actionUser.FETCH_USER({ name: 'Diêm', userId: 12 }))
-        dispatch(actionCarts.FETCH_CART(dataCarts))
+        async function getCart() {
+            try {
+                let result = await fetchLoading({
+                    url: 'http://localhost:5000/api/carts/1',
+                    method: 'GET',
+                    params: { userId: 1 }
+                })
+                let statusProducts = result.status
+                if (statusProducts === 200) {
+                    console.log(result.data.data)
+                    dispatch(actionCarts.FETCH_CART(result.data.data))
+                } else {
+                    message.error(result.data.message)
+                }
+
+            } catch (error) {
+                console.log(error)
+                message.error("Lỗi kết nối đến Server")
+            }
+        }
+        getCart()
+        // dispatch(actionCarts.FETCH_CART(dataCarts))
     }, [])
 
 
-    // function getCart() {
-    //     setCarts({
-    //         Carts: dataCarts
-    //     })
-    // }
-    // getCart = async () => {
-    //     // let idTest = 2
-    //     try {
-    //         // let result = await fetchLoading({
-    //         // url: 'http://localhost:5000/api/Carts/1', ///http://localhost:5000/api/Carts/1 , http://localhost:5000/api/Categories
-    //         // method: 'GET'
-    //         // })
-    //         await this.setState({
-    //             Carts: dataCarts
-    //         })
-    //         console.log("data: ", dataCarts)
-    //     } catch (error) {
-    //         console.log("Không nhận được dữ liệu")
-    //     }
-    // }
-    // async componentDidMount() {
-    //     await this.getCart()
-    // }
     return (
         <div className="container">
             <div>
