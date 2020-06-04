@@ -67,8 +67,9 @@ function Cart(props) {
     const history = useHistory()
     // const { } = props
     const cartList = useSelector(state => state[MODULE_CART].carts)
+    console.log("Cart -> cartList", cartList)
     const dispatch = useDispatch()
-    console.log("Store Carts: ", cartList)
+    // console.log("Store Carts: ", cartList)
     // console.log("User API trả về: ", user)
 
     function clickCheckout() {
@@ -85,7 +86,7 @@ function Cart(props) {
                 })
                 let statusProducts = result.status
                 if (statusProducts === 200) {
-                    console.log(result.data.data)
+                    console.log("getCart -> result.data.0ata", result.data.data)
                     dispatch(actionCarts.FETCH_CART(result.data.data))
                 } else {
                     message.error(result.data.message)

@@ -29,6 +29,7 @@ function Detail(props) {
     async function getImageByColor(value) {
 
         try {
+
             let result = await fetchLoading({
                 url: "http://localhost:5000/api/products/" + props.match.params.id + "/" + value,
                 method: 'GET',
@@ -36,9 +37,12 @@ function Detail(props) {
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
-                console.log("Change color: ", result.data.data)
-                setstate({ ...state, productImages: result.data.data })
-                setimage({ name: result.data.data[0].name, url: result.data.data[0].url })
+                if (result.data.data.length > 0) {
+                    console.log("Change color: ", result.data.data)
+                    setstate({ ...state, productImages: result.data.data })
+                    setimage({ name: result.data.data[0].name, url: result.data.data[0].url })
+                } else console.log("Change color: ", result.data.message)
+
             } else {
                 message.error(result.data.message)
             }
@@ -87,7 +91,7 @@ function Detail(props) {
                 <div className="col-md-3 sidebar">
                     <div className="sidebar-module-container">
                         <div className="home-banner outer-top-n">
-                            <img src={imgAdv} alt="Image" />
+                            <img src={imgAdv} alt="adad" />
                         </div>
                     </div>
                 </div>
