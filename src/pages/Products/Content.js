@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { } from 'react'
 import { Link } from 'react-router-dom'
 // import imgGym from '../../common/assets/images/products/gym-black.jpg'
 // import imgNB from '../../common/assets/images/products/NB-shoes-black.jpg'

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import imgAdv from '../../common/assets/images/banners/LHS-banner.jpg'
 import { Rate, message, InputNumber, Select, Button, Form } from 'antd'
 import { fetchLoading } from '../../common/utils/effect'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
 function Detail(props) {
@@ -10,21 +10,42 @@ function Detail(props) {
     const [state, setstate] = useState({})
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
-    // console.log("list images: ", state.productImages)
-    // console.log("Main Image:", image)
     const { Option } = Select;
 
-    const onFinish = values => {
-        console.log('Add:', values);
+    async function onFinish(values) {
+        // console.log('Add:', values);
+        try {
+
+            let result = await fetchLoading({
+                url: "http://localhost:5000/api/Carts/",
+                method: 'POST',
+                data: {
+                    cartId: 1,
+                    productId: props.match.params.id,
+                    color: "" + values.selectColor,
+                    size: "" + values.selectSize,
+                    quantity: values.quantity
+                }
+
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+            } else {
+                message.error("Đã xảy ra lỗi !")
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
     };
 
     function onChange(value) {
-        console.log('changed Quantity', value);
+        // console.log('changed Quantity', value);
     }
 
-    function handleChangeColor(value) {
-        console.log(`selected ${value}`);
-        getImageByColor(value)
+    function handleChangeColor(value, option) {
+        getImageByColor(option.key)
     }
     async function getImageByColor(value) {
 
@@ -38,13 +59,12 @@ function Detail(props) {
             let statusProducts = result.status
             if (statusProducts === 200) {
                 if (result.data.data.length > 0) {
-                    console.log("Change color: ", result.data.data)
                     setstate({ ...state, productImages: result.data.data })
                     setimage({ name: result.data.data[0].name, url: result.data.data[0].url })
-                } else console.log("Change color: ", result.data.message)
+                } else console.log("Đã xảy ra lỗi")
 
             } else {
-                message.error(result.data.message)
+                message.error("Đã xảy ra lỗi")
             }
         } catch (error) {
             console.log(error)
@@ -52,7 +72,7 @@ function Detail(props) {
         }
     }
     function handleChangeSize(value) {
-        console.log(`selected ${value}`);
+        // console.log(`selected ${value}`);
     }
 
     useEffect(() => {
@@ -70,10 +90,10 @@ function Detail(props) {
                         name: result.data.data.productImages[0].name,
                         url: result.data.data.productImages[0].url
                     })
-                    form.setFieldsValue({ selectColor: result.data.data.colors[0].id })
+                    form.setFieldsValue({ selectColor: result.data.data.colors[0].color })
                     form.setFieldsValue({ selectSize: result.data.data.sizes[0] })
                 } else {
-                    message.error(result.data.message)
+                    message.error("Đã có lỗi xảy ra !")
                 }
             } catch (error) {
                 console.log(error)
@@ -122,18 +142,16 @@ function Detail(props) {
                                             >
                                                 <div className="owl-item" style={{ width: 340 }}>
                                                     <div className="single-product-gallery-item" id="slide1">
-                                                        <Link
+                                                        <a
                                                             data-lightbox="image-1"
                                                             data-title="Gallery"
-                                                            to={"/detail/" + props.match.params.id}
                                                         >
                                                             <img
                                                                 className="img-responsive"
                                                                 alt={image.name}
                                                                 src={(image.url) ? "http://localhost:5000" + image.url : ""}
-                                                            // src={"http://localhost:5000" + image.url}
                                                             />
-                                                        </Link>
+                                                        </a>
                                                     </div>
                                                 </div>
 
@@ -162,12 +180,11 @@ function Detail(props) {
 
                                                                     <div className="owl-item" style={{ width: 80 }} key={index}>
                                                                         <div className="item">
-                                                                            <Link
+                                                                            <a
                                                                                 onClick={() => setimage({ ...image, url: imageList.url })}
                                                                                 className="horizontal-thumb active"
                                                                                 data-target="#owl-single-product"
                                                                                 data-slide={1}
-                                                                                to="/detail/2"
                                                                             >
                                                                                 <img
                                                                                     className="img-responsive"
@@ -175,7 +192,7 @@ function Detail(props) {
                                                                                     alt={imageList.name}
                                                                                     src={"http://localhost:5000" + imageList.url}
                                                                                 />
-                                                                            </Link>
+                                                                            </a>
                                                                         </div>
                                                                     </div>
 
@@ -266,11 +283,11 @@ function Detail(props) {
                                                         label="Màu :"
                                                         name="selectColor"
                                                     >
-                                                        <Select size="middle" style={{ width: 100 }} onChange={handleChangeColor}>
+                                                        <Select size="middle" style={{ width: 100 }} onChange={handleChangeColor} >
                                                             {(state.colors)
                                                                 ? state.colors.map((color, index) => {
                                                                     return (
-                                                                        <Option key={index} value={color.id}>{color.color}</Option>
+                                                                        <Option key={color.id} value={color.color}>{color.color}</Option>
                                                                     )
                                                                 })
                                                                 : <></>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { } from 'react'
 import { Pagination } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import * as actionProducts from '../../actions/actionProducts'

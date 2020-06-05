@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 // import { fetchLoading } from '../../common/utils/effect'
 import Items from './Items'
@@ -15,92 +15,36 @@ import IMG3 from '../../common/assets/images/products/NB-shoes-black.jpg'
 import { fetchLoading } from '../../common/utils/effect'
 import { message } from 'antd'
 
-
-const dataCarts = {
-    "successed": true,
-    "message": null,
-    "data": {
-        "totalQuantity": 3,
-        "totalPrice": 550000,
-        "cartItemsDTO": [
-            {
-                "cartId": 2,
-                "productId": 1,
-                "productName": "Áo Tập Gym Nữ",
-                "price": 100000,
-                "totalPrice": 200000,
-                "size": 'L',
-                "color": 'Đen',
-                "quantity": 2,
-                "quantityOfWarehouse": 5,
-                "image": IMG1,
-            },
-            {
-                "cartId": 2,
-                "productId": 2,
-                "productName": "Áo tập yoga",
-                "price": 50000,
-                "totalPrice": 150000,
-                "size": 'L',
-                "color": 'Hồng',
-                "quantity": 3,
-                "quantityOfWarehouse": 5,
-                "image": IMG2
-            },
-            {
-                "cartId": 2,
-                "productId": 7,
-                "productName": "Giày NB Run1",
-                "price": 200000,
-                "totalPrice": 200000,
-                "size": '41',
-                "color": 'Đen',
-                "quantity": 1,
-                "quantityOfWarehouse": 4,
-                "image": IMG3
-            }
-        ],
-    }
-}
-
 function Cart(props) {
     const history = useHistory()
-    // const { } = props
     const cartList = useSelector(state => state[MODULE_CART].carts)
     console.log("Cart -> cartList", cartList)
     const dispatch = useDispatch()
-    // console.log("Store Carts: ", cartList)
-    // console.log("User API trả về: ", user)
-
     function clickCheckout() {
         history.push("/checkout")
     }
-
-    useEffect(() => {
-        async function getCart() {
-            try {
-                let result = await fetchLoading({
-                    url: 'http://localhost:5000/api/carts/1',
-                    method: 'GET',
-                    params: { userId: 1 }
-                })
-                let statusProducts = result.status
-                if (statusProducts === 200) {
-                    console.log("getCart -> result.data.0ata", result.data.data)
-                    dispatch(actionCarts.FETCH_CART(result.data.data))
-                } else {
-                    message.error(result.data.message)
-                }
-
-            } catch (error) {
-                console.log(error)
-                message.error("Lỗi kết nối đến Server")
+    async function getCart() {
+        try {
+            let result = await fetchLoading({
+                url: 'http://localhost:5000/api/carts/1',
+                method: 'GET',
+                params: { userId: 1 }
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                // console.log("getCart -> result.data.data", result.data.data)
+                dispatch(actionCarts.FETCH_CART(result.data.data))
+            } else {
+                message.error(result.data.message)
             }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
         }
+    }
+    useEffect(() => {
         getCart()
-        // dispatch(actionCarts.FETCH_CART(dataCarts))
     }, [])
-
 
     return (
         <div className="container">
@@ -129,7 +73,7 @@ function Cart(props) {
                                 </tfoot>
 
                                 {/* /tbody ITEMS*/}
-                                <Items />
+                                <Items getCart={getCart} />
 
                                 {/* /tbody */}
                             </table>{/* /table */}
