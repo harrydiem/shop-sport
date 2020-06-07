@@ -5,14 +5,15 @@ import { fetchLoading } from '../../common/utils/effect'
 import * as actionCarts from '../../actions/actionCarts'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 function Detail(props) {
+    const cartList = useSelector(state => state[MODULE_CART].carts)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
     const { Option } = Select;
-
     async function onFinish(values) {
         // console.log('Add:', values);
         if (localStorage.id) { //Login emty
@@ -31,6 +32,10 @@ function Detail(props) {
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+
+                    console.log("onFinish -> cartList.cartItemsDTO", cartList.cartItemsDTO)
+                    localStorage.setItem('dataCart', JSON.stringify({ countCart: cartList.cartItemsDTO.length })) //Chua lay luon Sp hien tai
+
                 } else {
                     message.error("Đã xảy ra lỗi !")
                 }
@@ -45,11 +50,8 @@ function Detail(props) {
                 var updateCart = getCart
                 var checkPoint = false
                 for (var i = 0; i < updateCart.listCarts.length; i++) {
-                    console.log((updateCart.listCarts[0].productId, updateCart.listCarts[0].color, updateCart.listCarts[0].size))
-                    console.log(props.match.params.id, values.selectColor, values.selectSize)
                     if (parseInt(updateCart.listCarts[i].productId) === parseInt(props.match.params.id) && updateCart.listCarts[i].color === values.selectColor && updateCart.listCarts[i].size === values.selectSize) {//Trung SP , Tang Num
                         updateCart.listCarts[i].quantity += parseInt(values.quantity)
-                        localStorage.setItem('dataCart', JSON.stringify(updateCart))
                         checkPoint = true
                         break
                     } else {
@@ -57,6 +59,7 @@ function Detail(props) {
                     }
                 }
                 if (!checkPoint) {
+                    updateCart.countCart += 1
                     updateCart.listCarts.push({
                         productId: parseInt(props.match.params.id),
                         productName: state.name,
@@ -66,8 +69,10 @@ function Detail(props) {
                         quantity: values.quantity,
                         url: state.productImages[0].url,
                     })
-                    localStorage.setItem('dataCart', JSON.stringify(updateCart))
                 }
+                localStorage.setItem('dataCart', JSON.stringify(updateCart))
+                dispatch(actionCarts.COUNT_CART(updateCart.countCart))
+                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
             }
             else {//Local->dataCart Not Found
                 let dataCartNew = {
@@ -85,6 +90,8 @@ function Detail(props) {
                     ]
                 }
                 localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
+                dispatch(actionCarts.COUNT_CART(1))
+                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
             }
         }
     }

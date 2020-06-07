@@ -69,22 +69,48 @@ function Login() {
           name: result.data.data.lastName,
           token: result.data.data.token,
         }
-        // localStorage.setItem('info', JSON.stringify(loginLocal))
+        await addLocalToCart(result.data.data.id)
         localStorage.setItem('token', loginLocal.token)
         localStorage.setItem('id', loginLocal.id)
         localStorage.setItem('name', loginLocal.name)
         dispatch(actionUser.FETCH_USER(result.data.data))
-
         history.goBack()
-      } else
+      }
+      else {
         message.error(result.data.message)
-      setIsLoadingSignIn(false)
-    } catch (error) {
+        setIsLoadingSignIn(false)
+      }
+    }
+    catch (error) {
       console.log(error)
       setIsLoadingSignIn(false)
       message.error("Lỗi kết nối đến Server !!")
     }
+  }
 
+  async function addLocalToCart(idUser) {
+    if (localStorage.dataCart) {
+      const getCart = JSON.parse(localStorage.dataCart)
+      var updateCart = getCart
+      for (var i = 0; i < updateCart.listCarts.length; i++) {
+        try {
+          let result = await fetchLoading({
+            url: "http://localhost:5000/api/Carts/",
+            method: 'POST',
+            data: {
+              CartId: idUser,
+              productId: updateCart.listCarts[i].productId,
+              color: "" + updateCart.listCarts[i].color,
+              size: "" + updateCart.listCarts[i].size,
+              quantity: updateCart.listCarts[i].quantity
+            }
+          })
+        } catch (error) {
+          console.log(error)
+          message.error("Lỗi kết nối đến Server")
+        }
+      }
+    }
   }
 
   return (

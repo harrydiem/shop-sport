@@ -4,14 +4,13 @@ import Img from '../../common/assets/images/cart.jpg'
 import Logo from '../../common/assets/images/logo3.png'
 import { Link } from 'react-router-dom'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import * as actionCarts from '../../actions/actionCarts'
 import { fetchLoading } from '../../common/utils/effect'
 import { message } from 'antd'
 function HeaderMain() {
-  // const cartList = useSelector(state => state[MODULE_CART].carts)
-
-
-  // let NumCart = ()
+  const countCart = useSelector(state => state[MODULE_CART].countCart)
+  // const dispatch = useDispatch()
   async function getCart() {
     try {
       let result = await fetchLoading({
@@ -21,10 +20,9 @@ function HeaderMain() {
       })
       let statusProducts = result.status
       if (statusProducts === 200) {
-        localStorage.setItem('countCart', localStorage.countCart += result.data.data.cartItemsDTO.length) //Cong voi so luong trong GH co san
+        localStorage.setItem('dataCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Cong voi so luong trong GH co san
       } else {
-        localStorage.setItem('countCart', localStorage.countCart) //Giu nguyen 
-        console.log("Trống")
+        localStorage.setItem('countCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Giu nguyen 
       }
     } catch (error) {
       console.log(error)
@@ -34,12 +32,10 @@ function HeaderMain() {
   useEffect(() => {
     if (localStorage.id) {
       getCart()
-    } else {
-      localStorage.setItem('countCart', 0) //defaul
     }
   }, [])
-  const cartList = useSelector(state => state[MODULE_CART].carts)
-  console.log("HeaderMain -> cartList", cartList)
+
+
   return (
     <div className="main-header">
       <div className="container">
@@ -65,7 +61,7 @@ function HeaderMain() {
                 <div className="control-group">
                   <ul className="categories-filter animate-dropdown">
                     <li className="dropdown">
-                      {" "}
+
                       <a
                         className="dropdown-toggle"
                         data-toggle="dropdown"
@@ -104,13 +100,12 @@ function HeaderMain() {
               </form>
             </div>
             {/* /.search-area */}
-            {/* ============================================================= SEARCH AREA : END ============================================================= */}{" "}
+            {/* ============================================================= SEARCH AREA : END ============================================================= */}
           </div>
           {/* /.top-search-holder */}
           <div className="col-xs-12 col-sm-12 col-md-2 animate-dropdown top-cart-row">
             {/* ============================================================= SHOPPING CART DROPDOWN ============================================================= */}
             <div className="dropdown dropdown-cart">
-
               <Link
                 to="/cart"
                 className="dropdown-toggle lnk-cart"
@@ -120,7 +115,8 @@ function HeaderMain() {
                   <div className="basket" />
                   <div className="basket-item-count">
                     <span className="count">
-                      {(cartList.cartItemsDTO) ? cartList.cartItemsDTO.length : 0}
+                      {(localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0}
+                      {/* {(countCart) ? countCart : 0} */}
                     </span>
                   </div>
                   <div className="total-price-basket">
@@ -130,10 +126,6 @@ function HeaderMain() {
 
                     {/* <span className="value">600.000</span>
                                                 <span className="sign">VND</span> */}
-
-
-
-
                   </div>
                 </div>
               </Link>

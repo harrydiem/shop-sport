@@ -25,6 +25,7 @@ function Header1() {
         </Menu>
     )
 
+
     const userInfo = useSelector(state => state[MODULE_USER].user)
     console.log("userInfo", userInfo)
 
