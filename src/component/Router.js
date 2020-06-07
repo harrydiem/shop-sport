@@ -14,6 +14,7 @@ import Cart from '../pages/Cart/Cart'
 import Detail from '../pages/Detail/Detail'
 import Wishlists from '../pages/Wishlists/Wishlists'
 import Checkout from '../pages/Checkout/Checkout'
+import Information from '../pages/Information/Information'
 // import Checkout2 from '../pages/Checkout/Checkout2'
 
 export class Router extends Component {
@@ -32,6 +33,7 @@ export class Router extends Component {
                                 <Route exact path='/wishlists' component={Wishlists} />
                                 <Route exact path='/checkout' component={Checkout} />
                                 <Route exact path='/myaccount' component={Login} />
+                                <Route exact path='/information' component={Information} />
                                 <Route component={NOTFOUND404} />
                             </Switch>
                         </Main>

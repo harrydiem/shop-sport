@@ -14,4 +14,9 @@ export const GET_USER = (user) => {
         payload: user
     }
 }
-
+export const COUNT_CART = (countCart) => {
+    return {
+        type: cartConstain.COUNT_CART,
+        payload: countCart
+    }
+}

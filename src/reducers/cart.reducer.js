@@ -2,11 +2,9 @@ import * as cartConstain from '../constain/cartConstain'
 
 const initialState = {
     carts: {},
-    user: null
+    user: null,
+    countCart: null
 }
-
-
-
 function todos(state = initialState, action) {
     switch (action.type) {
         case cartConstain.FETCH_CART:
@@ -18,6 +16,11 @@ function todos(state = initialState, action) {
             return {
                 ...state,
                 user: action.payload
+            }
+        case cartConstain.COUNT_CART:
+            return {
+                ...state,
+                countCart: action.payload
             }
         default:
             return state

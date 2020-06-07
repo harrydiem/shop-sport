@@ -2,7 +2,7 @@ import * as productsConstain from '../constain/productsConstain'
 
 const initialState = {
     products: {},
-    pages: { Keyword: "", PageIndex: 1, PageSize: 9 },//{ Keyword: "", PageIndex: 1, PageSize: 12 }
+    pages: { Keyword: "", PageIndex: 1, PageSize: 9 },//{ Keyword: {search}, PageIndex: 1, PageSize: 12 }
 }
 
 function listProduct(state = initialState, action) {

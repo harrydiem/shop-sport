@@ -17,7 +17,6 @@ SignUp.defaulProps = {
 function SignUp(props) {
   const { onSubmit, Create, isLoading } = props
   const [form] = Form.useForm();
-  //const [DataCreate, setDataCreate] = useState({ emailCreate: "", name: "", phone: "", pass: "", pass2: "" })
 
   function handelSubmit(values) {
     if (!onSubmit) return;
@@ -29,12 +28,10 @@ function SignUp(props) {
     }
   }
   useEffect(() => {
-    // effect
-    console.log("Vào useEffect , Create: ", Create)
+    // console.log("UseEffect , True: clean form ", Create)
     if (Create) {//True là ĐK thành công
       form.resetFields(); //reset
     }
-
     return () => {
       // cleanup
     }
@@ -66,16 +63,16 @@ function SignUp(props) {
           </Form.Item>
         </div>
         <div className="form-group">
-          <label className="info-title" htmlFor="exampleInputEmail1">Tên <span>*</span></label>
+          <label className="info-title" htmlFor="exampleInputEmail1">Họ và Tên <span>*</span></label>
           <Form.Item
             name="name"
             rules={[
-              { required: true, message: 'Vui lòng nhập tên !' },
+              { required: true, message: 'Vui lòng nhập họ và tên !' },
             ]}
           >
             <Input
               // defaultValue={DataCreate.name}
-              placeholder="Nhập tên..."
+              placeholder="Nhập nhập họ và tên..."
               className="form-control unicase-form-control text-input"
               id="name1"
             />

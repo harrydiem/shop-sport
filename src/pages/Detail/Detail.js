@@ -6,7 +6,7 @@ import { fetchLoading } from '../../common/utils/effect'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
 function Detail(props) {
-    // console.log(props.match.params.id)
+
     const [state, setstate] = useState({})
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
@@ -15,18 +15,16 @@ function Detail(props) {
     async function onFinish(values) {
         // console.log('Add:', values);
         try {
-
             let result = await fetchLoading({
                 url: "http://localhost:5000/api/Carts/",
                 method: 'POST',
                 data: {
-                    cartId: 1,
+                    cartId: localStorage.id,
                     productId: props.match.params.id,
                     color: "" + values.selectColor,
                     size: "" + values.selectSize,
                     quantity: values.quantity
                 }
-
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
@@ -323,22 +321,16 @@ function Detail(props) {
                                                         label="SL:"
                                                         name="quantity"
                                                         initialValue={1}
-
                                                         rules={[
                                                             { required: true, message: 'Bỏ trống!' },
                                                             { pattern: /^(0|[1-9][0-9]*)$/, message: 'Nhập số!' }
                                                         ]}
-
                                                     >
                                                         <InputNumber
+                                                            className="numDetail"
                                                             min={1}
                                                             max={5}
                                                             size="large"
-                                                            style={{
-                                                                fontWeight: 'bold',
-                                                                width: 60,
-                                                                borderRadius: "3px"
-                                                            }}
                                                             onChange={onChange}
                                                         />
 

@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import SignIn from './SignIn'
 import SignUp from './SignUp'
 import { withRouter, useHistory } from 'react-router-dom'
 import { message } from 'antd';
-import { fetchLoading } from '../../common/utils/effect';
-
+import { fetchLoading } from '../../common/utils/effect'
+import * as actionUser from '../../actions/actionUser'
+import { useDispatch } from 'react-redux';
 
 function Login() {
-  const [Create, setCreate] = useState({ onCreate: false })
-  const [isLoading, setIsLoading] = useState({ isLoadingCreate: false, isLoadingLogin: false })
+  const [Create, setCreate] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingSignIn, setIsLoadingSignIn] = useState(false)
   const history = useHistory()
+  const dispatch = useDispatch()
 
   async function onSubmitCreate(formValue) {
+    setIsLoading(true) //button Loading....
     const newUser = {
       email: formValue.emailCreate,
       firstName: "H ",
@@ -20,10 +24,6 @@ function Login() {
       phoneNumber: formValue.phone,
       password: formValue.pass,
     }
-    setIsLoading({
-      ...isLoading,
-      isLoadingCreate: true
-    })
     console.log("send: ", newUser)
     try {
       let result = await fetchLoading({
@@ -34,88 +34,68 @@ function Login() {
       const statusCreate = result.status
       if (statusCreate === 200) {
         // Xác nhận đk thành công gửi onCreate=True đến Sign để crean inputValue
-        if (Create.onCreate === false) {
-          setCreate({
-            onCreate: true
-          })
-          setIsLoading({
-            ...isLoading,
-            isLoadingCreate: false
-          })
+        if (Create === false) {
+          setIsLoading(false) //turn off loading
           message.success('Đăng ký thành công')
+          setCreate(true) // clean form
+
         }
       } else {
-        setCreate({
-          onCreate: false
-        })
-        setIsLoading({ ...isLoading, isLoadingCreate: false })
+        setCreate(false)
+        setIsLoading(false)
         message.error(result.data.message) //Sever trả về message : "Thất bại"
       }
     } catch (error) {
       console.log(error)
-      setIsLoading({
-        ...isLoading,
-        isLoadingCreate: false
-      })
+      setIsLoading(false)
       message.error("Lỗi kết nối đến Server !!")
 
     }
   }
 
   async function onLogin(user) {
-    console.log("send: ", user)
-    setIsLoading({
-      ...isLoading,
-      isLoadingLogin: true
-    })
+    setIsLoadingSignIn(true)
     try {
       const result = await fetchLoading({
         url: 'http://localhost:5000/api/Users/authenticate',
         method: 'POST',
         data: user
       })
-
-      // console.log("resutl : ", result)
       const statusLogin = result.status
       if (statusLogin === 200) {
-
         message.success("Đăng nhập thành công !")
+        var loginLocal = {
+          id: result.data.data.id,
+          name: result.data.data.lastName,
+          token: result.data.data.token,
+        }
+        // localStorage.setItem('info', JSON.stringify(loginLocal))
+        localStorage.setItem('token', loginLocal.token)
+        localStorage.setItem('id', loginLocal.id)
+        localStorage.setItem('name', loginLocal.name)
+        dispatch(actionUser.FETCH_USER(result.data.data))
+
         history.goBack()
       } else
         message.error(result.data.message)
-      setIsLoading({
-        ...isLoading,
-        isLoadingLogin: false
-      })
-
+      setIsLoadingSignIn(false)
     } catch (error) {
       console.log(error)
-      setIsLoading({
-        ...isLoading,
-        isLoadingLogin: false
-      })
+      setIsLoadingSignIn(false)
       message.error("Lỗi kết nối đến Server !!")
     }
 
   }
-  useEffect(() => {
-    // effect
-
-    return () => {
-      // cleanup
-    }
-  })
-
 
   return (
     <div className="container">
       <div className="sign-in-page">
         <div className="row">
           {/* Sign-in */}
-          <SignIn isLoading={isLoading.isLoadingLogin} onLogin={onLogin} />
+          <SignIn isLoading={isLoadingSignIn} onLogin={onLogin} />
           {/* Sign-in */}
           {/* create a new account */}
-          <SignUp isLoading={isLoading.isLoadingCreate} Create={Create.onCreate} onSubmit={onSubmitCreate} />
+          <SignUp isLoading={isLoading} Create={Create} onSubmit={onSubmitCreate} />
           {/* create a new account */}
         </div>{/* /.row */}
       </div>{/* /.sigin-in*/}

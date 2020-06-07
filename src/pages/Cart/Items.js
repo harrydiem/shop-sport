@@ -9,7 +9,7 @@ import { fetchLoading } from "../../common/utils/effect";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
-function onChange(value) {}
+function onChange(value) { }
 
 function Items(props) {
   const cartList = useSelector((state) => state[MODULE_CART].carts);
@@ -25,7 +25,7 @@ function Items(props) {
       async onOk() {
         try {
           let result = await fetchLoading({
-            url: "http://localhost:5000/api/carts/1/" + id, // 1 userId
+            url: "http://localhost:5000/api/carts/" + localStorage.id + "/" + id, // 1 userId
             method: "DELETE",
             data: {
               color: "" + color,
@@ -40,7 +40,7 @@ function Items(props) {
             // console.log("onOk -> cart", cartdelete);
             // dispatch(actionCarts.FETCH_CART(cartdelete));
             // console.log("onOk -> cartList", cartList);
-            message.success("Đã xóa sản phẩm khỏi giỏ hàng !");
+            // message.success("Đã xóa sản phẩm khỏi giỏ hàng !");
           } else {
             message.error(result.data.message);
           }
@@ -49,7 +49,7 @@ function Items(props) {
           message.error("Lỗi kết nối đến Server");
         }
       },
-      onCancel() {},
+      onCancel() { },
     });
   }
 
