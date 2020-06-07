@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import imgAdv from '../../common/assets/images/banners/LHS-banner.jpg'
 import { Rate, message, InputNumber, Select, Button, Form } from 'antd'
 import { fetchLoading } from '../../common/utils/effect'
-// import { Link } from 'react-router-dom'
+import * as actionCarts from '../../actions/actionCarts'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
+import { useDispatch } from 'react-redux'
 function Detail(props) {
-
+    const dispatch = useDispatch()
     const [state, setstate] = useState({})
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
@@ -14,29 +15,79 @@ function Detail(props) {
 
     async function onFinish(values) {
         // console.log('Add:', values);
-        try {
-            let result = await fetchLoading({
-                url: "http://localhost:5000/api/Carts/",
-                method: 'POST',
-                data: {
-                    cartId: localStorage.id,
-                    productId: props.match.params.id,
-                    color: "" + values.selectColor,
-                    size: "" + values.selectSize,
-                    quantity: values.quantity
+        if (localStorage.id) { //Login emty
+            try {
+                let result = await fetchLoading({
+                    url: "http://localhost:5000/api/Carts/",
+                    method: 'POST',
+                    data: {
+                        cartId: localStorage.id,
+                        productId: props.match.params.id,
+                        color: "" + values.selectColor,
+                        size: "" + values.selectSize,
+                        quantity: values.quantity
+                    }
+                })
+                let statusProducts = result.status
+                if (statusProducts === 200) {
+                    message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                } else {
+                    message.error("Đã xảy ra lỗi !")
                 }
-            })
-            let statusProducts = result.status
-            if (statusProducts === 200) {
-                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
-            } else {
-                message.error("Đã xảy ra lỗi !")
+            } catch (error) {
+                console.log(error)
+                message.error("Lỗi kết nối đến Server")
             }
-        } catch (error) {
-            console.log(error)
-            message.error("Lỗi kết nối đến Server")
+        } else //login false
+        {
+            if (localStorage.dataCart) { //Local->dataCart find
+                const getCart = JSON.parse(localStorage.dataCart)
+                var updateCart = getCart
+                var checkPoint = false
+                for (var i = 0; i < updateCart.listCarts.length; i++) {
+                    console.log((updateCart.listCarts[0].productId, updateCart.listCarts[0].color, updateCart.listCarts[0].size))
+                    console.log(props.match.params.id, values.selectColor, values.selectSize)
+                    if (parseInt(updateCart.listCarts[i].productId) === parseInt(props.match.params.id) && updateCart.listCarts[i].color === values.selectColor && updateCart.listCarts[i].size === values.selectSize) {//Trung SP , Tang Num
+                        updateCart.listCarts[i].quantity += parseInt(values.quantity)
+                        localStorage.setItem('dataCart', JSON.stringify(updateCart))
+                        checkPoint = true
+                        break
+                    } else {
+                        checkPoint = false
+                    }
+                }
+                if (!checkPoint) {
+                    updateCart.listCarts.push({
+                        productId: parseInt(props.match.params.id),
+                        productName: state.name,
+                        size: values.selectSize,
+                        color: values.selectColor,
+                        price: state.price,
+                        quantity: values.quantity,
+                        url: state.productImages[0].url,
+                    })
+                    localStorage.setItem('dataCart', JSON.stringify(updateCart))
+                }
+            }
+            else {//Local->dataCart Not Found
+                let dataCartNew = {
+                    countCart: 1,
+                    listCarts: [
+                        {
+                            productId: parseInt(props.match.params.id),
+                            productName: state.name,
+                            size: values.selectSize,
+                            color: values.selectColor,
+                            price: state.price,
+                            quantity: values.quantity,
+                            url: state.productImages[0].url,
+                        }
+                    ]
+                }
+                localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
+            }
         }
-    };
+    }
 
     function onChange(value) {
         // console.log('changed Quantity', value);

@@ -24,29 +24,32 @@ function Cart(props) {
         history.push("/checkout")
     }
     async function getCart() {
-        try {
-            let result = await fetchLoading({
-                url: 'http://localhost:5000/api/carts/' + localStorage.id,
-                method: 'GET',
-                params: { userId: localStorage.id }
-            })
-            let statusProducts = result.status
-            if (statusProducts === 200) {
-                // console.log("getCart -> result.data.data", result.data.data)
-                dispatch(actionCarts.FETCH_CART(result.data.data))
-            } else {
-                dispatch(actionCarts.FETCH_CART({}))
-                console.log("Trống")
-                //Gọi hàm return
+        if (localStorage.id) {
+            try {
+                let result = await fetchLoading({
+                    url: 'http://localhost:5000/api/carts/' + localStorage.id,
+                    method: 'GET',
+                    params: { userId: localStorage.id }
+                })
+                let statusProducts = result.status
+                if (statusProducts === 200) {
+                    // console.log("getCart -> result.data.data", result.data.data)
+                    dispatch(actionCarts.FETCH_CART(result.data.data))
+                } else {
+                    dispatch(actionCarts.FETCH_CART({}))
+                    console.log("Trống")
+                    //Gọi hàm return
+                }
+            } catch (error) {
+                console.log(error)
+                message.error("Lỗi kết nối đến Server")
             }
-        } catch (error) {
-            console.log(error)
-            message.error("Lỗi kết nối đến Server")
         }
     }
     useEffect(() => {
-        getCart()
-
+        if (localStorage.id) {
+            getCart()
+        }
     }, [])
 
     return (

@@ -1,11 +1,43 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
-import React, { } from 'react'
+import React, { useEffect } from 'react'
 import Img from '../../common/assets/images/cart.jpg'
 import Logo from '../../common/assets/images/logo3.png'
 import { Link } from 'react-router-dom'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 import { useSelector } from 'react-redux'
+import { fetchLoading } from '../../common/utils/effect'
+import { message } from 'antd'
 function HeaderMain() {
+  // const cartList = useSelector(state => state[MODULE_CART].carts)
+
+
+  // let NumCart = ()
+  async function getCart() {
+    try {
+      let result = await fetchLoading({
+        url: 'http://localhost:5000/api/carts/' + localStorage.id,
+        method: 'GET',
+        params: { userId: localStorage.id }
+      })
+      let statusProducts = result.status
+      if (statusProducts === 200) {
+        localStorage.setItem('countCart', localStorage.countCart += result.data.data.cartItemsDTO.length) //Cong voi so luong trong GH co san
+      } else {
+        localStorage.setItem('countCart', localStorage.countCart) //Giu nguyen 
+        console.log("Trống")
+      }
+    } catch (error) {
+      console.log(error)
+      message.error("Lỗi kết nối đến Server")
+    }
+  }
+  useEffect(() => {
+    if (localStorage.id) {
+      getCart()
+    } else {
+      localStorage.setItem('countCart', 0) //defaul
+    }
+  }, [])
   const cartList = useSelector(state => state[MODULE_CART].carts)
   console.log("HeaderMain -> cartList", cartList)
   return (
