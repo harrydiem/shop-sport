@@ -61,6 +61,7 @@ function Login() {
       })
       const statusLogin = result.status
       if (statusLogin === 200) {
+        console.log(result.data)
         var loginLocal = {
           id: result.data.data.id,
           name: result.data.data.lastName,
@@ -128,31 +129,3 @@ function Login() {
 }
 
 export default withRouter(Login)
-
-// import React, { Component } from 'react'
-// // import {Input} from 'antd'
-// import SignIn from './SignIn'
-// import SignUp from './SignUp'
-// export default class Login extends Component {
-
-//   onSubmitCreate = (formValue) => {
-//     console.log("formValue:", formValue)
-//   }
-//   render() {
-
-//     return (
-// <div className="container">
-//   <div className="sign-in-page">
-//     <div className="row">
-//       {/* Sign-in */}
-//       <SignIn />
-//       {/* Sign-in */}
-//       {/* create a new account */}
-//       <SignUp onSubmit={this.onSubmitCreate} />
-//       {/* create a new account */}
-//     </div>{/* /.row */}
-//   </div>{/* /.sigin-in*/}
-// </div>
-//     )
-//   }
-// }

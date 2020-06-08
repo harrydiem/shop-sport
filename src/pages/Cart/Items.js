@@ -9,7 +9,28 @@ import { fetchLoading } from "../../common/utils/effect";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 function Items(props) {
   const { Option } = Select;
-  function onChange(value) { }
+
+  function onChange(productId, quantity, index) {  //Quantity
+    console.log("Change , Index ,value:", productId, index, quantity)
+    if (localStorage.id) {
+      let update = cartList
+      update.totalPrice -= update.cartItemsDTO[index].price * update.cartItemsDTO[index].quantity // Xóa giá trong tổng trước
+      update.cartItemsDTO[index].quantity = quantity
+      update.totalPrice += update.cartItemsDTO[index].quantity * update.cartItemsDTO[index].price
+      console.log(update)
+      // dispatch(actionCarts.FETCH_CART(update))
+
+    } else {
+      let update = cartList
+      update.totalPrice -= update.cartItemsDTO[index].price * update.cartItemsDTO[index].quantity // Xóa giá trong tổng trước
+      update.cartItemsDTO[index].quantity = quantity
+      update.totalPrice += update.cartItemsDTO[index].quantity * update.cartItemsDTO[index].price
+      console.log(update)
+      dispatch(actionCarts.FETCH_CART(update))
+      localStorage.setItem('dataCart', JSON.stringify(update))
+      history.push("/cart") //Load lai cap nhat
+    }
+  }
   const history = useHistory()
   const cartList = useSelector((state) => state[MODULE_CART].carts);
   const dispatch = useDispatch()
@@ -60,7 +81,7 @@ function Items(props) {
     }
     else {
       dispatch(actionCarts.FETCH_CART(update))
-      localStorage.setItem('dataCart', JSON.stringify({ update }))
+      localStorage.setItem('dataCart', JSON.stringify(update))
       dispatch(actionCarts.COUNT_CART(update.cartItemsDTO.length))
     }
     history.push("/cart")
@@ -163,7 +184,7 @@ function Items(props) {
                   width: 60,
                   borderRadius: "3px",
                 }}
-                onChange={onChange}
+                onChange={(value) => onChange(item.productId, value, index)}
               />
             </td>
             <td className="cart-product-sub-total">
