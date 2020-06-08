@@ -1,12 +1,14 @@
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { MODULE_NAME as MODULE_USER } from '../../constain/userConstain'
 import { DownOutlined, ExportOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu, Dropdown, message } from 'antd';
-
+import * as actionCarts from '../../actions/actionCarts'
 function Header1() {
     const history = useHistory()
+    const dispatch = useDispatch()
+    const userInfo = useSelector(state => state[MODULE_USER].user)
     const menu = (
         <Menu>
             <Menu.Item key="0" icon={<SettingOutlined />} onClick={() => history.push("/information")} >
@@ -16,21 +18,17 @@ function Header1() {
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="2" icon={<ExportOutlined />} onClick={() => {
-                message.success('Tài khoản đã được đăng xuất !')
+                dispatch(actionCarts.COUNT_CART(0))
+                dispatch(actionCarts.FETCH_CART({}))
                 localStorage.clear()
+                message.success('Tài khoản đã được đăng xuất !')
                 history.push("/")
             }}>
                 Đăng xuất
       </Menu.Item>
         </Menu>
     )
-
-
-    const userInfo = useSelector(state => state[MODULE_USER].user)
-    console.log("userInfo", userInfo)
-
     return (
-
         <div className="top-bar animate-dropdown">
             <div className="container">
                 <div className="header-top-inner">

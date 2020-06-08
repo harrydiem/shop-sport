@@ -1,41 +1,48 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React, { useEffect } from 'react'
-import Img from '../../common/assets/images/cart.jpg'
+// import Img from '../../common/assets/images/cart.jpg'
 import Logo from '../../common/assets/images/logo3.png'
 import { Link } from 'react-router-dom'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
+import { MODULE_NAME as MODULE_USER } from '../../constain/userConstain'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actionCarts from '../../actions/actionCarts'
+import * as actionUser from '../../actions/actionUser'
 import { fetchLoading } from '../../common/utils/effect'
 import { message } from 'antd'
 function HeaderMain() {
   const countCart = useSelector(state => state[MODULE_CART].countCart)
-  // const dispatch = useDispatch()
+  const user = useSelector(state => state[MODULE_USER].user)
+  // console.log(user)
+  const dispatch = useDispatch()
+
   async function getCart() {
-    try {
-      let result = await fetchLoading({
-        url: 'http://localhost:5000/api/carts/' + localStorage.id,
-        method: 'GET',
-        params: { userId: localStorage.id }
-      })
-      let statusProducts = result.status
-      if (statusProducts === 200) {
-        localStorage.setItem('dataCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Cong voi so luong trong GH co san
-      } else {
-        localStorage.setItem('countCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Giu nguyen 
+    if (user) {
+      try {
+        let result = await fetchLoading({
+          url: 'http://localhost:5000/api/carts/' + user,
+          method: 'GET',
+          params: { userId: user }
+        })
+        let statusProducts = result.status
+        if (statusProducts === 200) {
+          dispatch(actionCarts.COUNT_CART(result.data.data.cartItemsDTO.length))
+          localStorage.setItem('dataCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Cong voi so luong trong GH co san
+        } else {//Bad Request => 0
+          dispatch(actionCarts.COUNT_CART(0))
+        }
+      } catch (error) {
+        console.log(error)
+        message.error("Lỗi kết nối đến Server")
       }
-    } catch (error) {
-      console.log(error)
-      message.error("Lỗi kết nối đến Server")
     }
   }
   useEffect(() => {
     if (localStorage.id) {
+      dispatch(actionUser.FETCH_USER(localStorage.id))
       getCart()
     }
-  }, [])
-
-
+  })
   return (
     <div className="main-header">
       <div className="container">
@@ -115,8 +122,8 @@ function HeaderMain() {
                   <div className="basket" />
                   <div className="basket-item-count">
                     <span className="count">
-                      {(localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0}
-                      {/* {(countCart) ? countCart : 0} */}
+                      {/* {(localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0} */}
+                      {(countCart) ? countCart : 0}
                     </span>
                   </div>
                   <div className="total-price-basket">
@@ -129,7 +136,7 @@ function HeaderMain() {
                   </div>
                 </div>
               </Link>
-              <ul className="dropdown-menu">
+              {/* <ul className="dropdown-menu">
                 <li>
                   <div className="cart-item product-summary">
                     <div className="row">
@@ -155,26 +162,26 @@ function HeaderMain() {
                       </div>
                     </div>
                   </div>
-                  {/* /.cart-item */}
-                  <div className="clearfix" />
-                  <hr />
-                  <div className="clearfix cart-total">
-                    <div className="pull-right">
 
-                      <span className="text">Sub Total :</span>
-                      <span className="price">$600.00</span>
-                    </div>
-                    <div className="clearfix" />
-                    <a
-                      href="checkout.html"
-                      className="btn btn-upper btn-primary btn-block m-t-20"
-                    >
-                      Checkout
+              <div className="clearfix" />
+              <hr />
+              <div className="clearfix cart-total">
+                <div className="pull-right">
+
+                  <span className="text">Sub Total :</span>
+                  <span className="price">$600.00</span>
+                </div>
+                <div className="clearfix" />
+                <a
+                  href="checkout.html"
+                  className="btn btn-upper btn-primary btn-block m-t-20"
+                >
+                  Checkout
                 </a>
-                  </div>
-                  {/* /.cart-total*/}
+              </div>
+   
                 </li>
-              </ul>
+              </ul> */}
               {/* /.dropdown-menu*/}
             </div>
             {/* /.dropdown-cart */}
@@ -183,9 +190,9 @@ function HeaderMain() {
           {/* /.top-cart-row */}
         </div>
         {/* /.row */}
-      </div>
+      </div >
       {/* /.container */}
-    </div>
+    </div >
 
   )
 }

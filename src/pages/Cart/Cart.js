@@ -1,17 +1,12 @@
 
 import React, { useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-// import { fetchLoading } from '../../common/utils/effect'
 import Items from './Items'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actionCarts from '../../actions/actionCarts'
-// import * as actionUser from '../../actions/actionUser'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
-// import { MODULE_NAME as MODULE_USER } from '../../constain/userConstain'
+import { MODULE_NAME as MODULE_USER } from '../../constain/userConstain'
 import formatNumber from '../../common/utils/formatNumber'
-// import IMG1 from '../../common/assets/images/products/gym-black.jpg'
-// import IMG2 from '../../common/assets/images/products/yoga-pink.jpg'
-// import IMG3 from '../../common/assets/images/products/NB-shoes-black.jpg'
 import { fetchLoading } from '../../common/utils/effect'
 import { message } from 'antd'
 
@@ -20,6 +15,9 @@ function Cart(props) {
     const cartList = useSelector(state => state[MODULE_CART].carts)
     console.log("Cart -> cartList", cartList)
     const dispatch = useDispatch()
+    const user = useSelector(state => state[MODULE_USER].user)
+    // console.log(user)
+
     function clickCheckout() {
         history.push("/checkout")
     }
@@ -33,10 +31,13 @@ function Cart(props) {
                 })
                 let statusProducts = result.status
                 if (statusProducts === 200) {
-                    // console.log("getCart -> result.data.data", result.data.data)
                     dispatch(actionCarts.FETCH_CART(result.data.data))
+                    // (result.data.data.cartItemsDTO)
+                    // ? dispatch(actionCarts.COUNT_CART(result.data.data.cartItemsDTO.length))
+                    // : dispatch(actionCarts.COUNT_CART(0))
                 } else {
                     dispatch(actionCarts.FETCH_CART({}))
+                    dispatch(actionCarts.COUNT_CART(0))
                     console.log("Trống")
                     //Gọi hàm return
                 }
@@ -81,14 +82,11 @@ function Cart(props) {
                                                     </td>
                                                 </tr>
                                             </tfoot>
-
                                             {/* /tbody ITEMS*/}
                                             <Items getCart={getCart} />
-
-                                            {/* /tbody */}
-                                        </table>{/* /table */}
+                                        </table>
                                     </div>
-                                </div>{/* /.shopping-cart-table */}
+                                </div>
                                 <div className="col-md-4 col-sm-12 estimate-ship-tax">
                                     <span >
                                         <Link to="/products" className="btn btn-upper btn-primary outer-left-xs">TIẾP TỤC MUA SẮM</Link>

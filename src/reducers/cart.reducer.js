@@ -1,9 +1,9 @@
 import * as cartConstain from '../constain/cartConstain'
 
 const initialState = {
-    carts: {},
+    carts: (localStorage.dataCart) ? JSON.parse(localStorage.dataCart) : {},
     user: null,
-    countCart: (localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0
+    countCart: (localStorage.id) ? 0 : (localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0
 }
 function todos(state = initialState, action) {
     switch (action.type) {

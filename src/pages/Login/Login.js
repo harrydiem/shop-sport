@@ -13,7 +13,6 @@ function Login() {
   const [isLoadingSignIn, setIsLoadingSignIn] = useState(false)
   const history = useHistory()
   const dispatch = useDispatch()
-
   async function onSubmitCreate(formValue) {
     setIsLoading(true) //button Loading....
     const newUser = {
@@ -52,7 +51,6 @@ function Login() {
 
     }
   }
-
   async function onLogin(user) {
     setIsLoadingSignIn(true)
     try {
@@ -63,7 +61,6 @@ function Login() {
       })
       const statusLogin = result.status
       if (statusLogin === 200) {
-        message.success("Đăng nhập thành công !")
         var loginLocal = {
           id: result.data.data.id,
           name: result.data.data.lastName,
@@ -73,7 +70,9 @@ function Login() {
         localStorage.setItem('token', loginLocal.token)
         localStorage.setItem('id', loginLocal.id)
         localStorage.setItem('name', loginLocal.name)
-        dispatch(actionUser.FETCH_USER(result.data.data))
+        dispatch(actionUser.FETCH_USER(result.data.data.id))
+        localStorage.removeItem('dataCart')
+        message.success("Đăng nhập thành công !")
         history.goBack()
       }
       else {
@@ -87,22 +86,21 @@ function Login() {
       message.error("Lỗi kết nối đến Server !!")
     }
   }
-
   async function addLocalToCart(idUser) {
     if (localStorage.dataCart) {
       const getCart = JSON.parse(localStorage.dataCart)
       var updateCart = getCart
-      for (var i = 0; i < updateCart.listCarts.length; i++) {
+      for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
         try {
           let result = await fetchLoading({
             url: "http://localhost:5000/api/Carts/",
             method: 'POST',
             data: {
               CartId: idUser,
-              productId: updateCart.listCarts[i].productId,
-              color: "" + updateCart.listCarts[i].color,
-              size: "" + updateCart.listCarts[i].size,
-              quantity: updateCart.listCarts[i].quantity
+              productId: updateCart.cartItemsDTO[i].productId,
+              color: "" + updateCart.cartItemsDTO[i].color,
+              size: "" + updateCart.cartItemsDTO[i].size,
+              quantity: updateCart.cartItemsDTO[i].quantity
             }
           })
         } catch (error) {

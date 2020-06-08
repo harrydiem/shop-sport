@@ -1,6 +1,7 @@
 import * as userConstain from '../constain/userConstain.js'
 const initialState = {
     user: null
+    // localStorage.id ? localStorage.id : null
 }
 
 function todos(state = initialState, action) {

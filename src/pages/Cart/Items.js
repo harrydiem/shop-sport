@@ -1,22 +1,19 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Select, InputNumber, Rate, message, Modal } from "antd";
-// import * as actionCarts from "../../actions/actionCarts";
+import * as actionCarts from "../../actions/actionCarts";
 import { MODULE_NAME as MODULE_CART } from "../../constain/cartConstain";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import formatNumber from "../../common/utils/formatNumber";
 import { fetchLoading } from "../../common/utils/effect";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-
-const { Option } = Select;
-function onChange(value) { }
-
 function Items(props) {
+  const { Option } = Select;
+  function onChange(value) { }
+  const history = useHistory()
   const cartList = useSelector((state) => state[MODULE_CART].carts);
-  console.log("Items -> cartList", cartList);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch()
   function deleteItem(id, color, size, index) {
-    // console.log("delete: ", id, color, size, index);
     Modal.confirm({
       title: "Xóa sản phẩm khỏi giỏ hàng ?",
       icon: <ExclamationCircleOutlined />,
@@ -35,12 +32,6 @@ function Items(props) {
           let statusProducts = result.status;
           if (statusProducts === 200) {
             props.getCart();
-            // var cartdelete = cartList;
-            // cartdelete.cartItemsDTO.splice(index, 1);
-            // console.log("onOk -> cart", cartdelete);
-            // dispatch(actionCarts.FETCH_CART(cartdelete));
-            // console.log("onOk -> cartList", cartList);
-            // message.success("Đã xóa sản phẩm khỏi giỏ hàng !");
           } else {
             message.error(result.data.message);
           }
@@ -53,22 +44,45 @@ function Items(props) {
     });
   }
 
+  function deleteItemClient(productId, quantity, price, index) {
+
+    console.log("Xóa productID , Index :", productId, index)
+    let update = cartList
+    update.cartItemsDTO.splice(index, 1)
+    update.countCart = update.cartItemsDTO.length
+    update.totalPrice -= quantity * price
+    console.log(update)
+
+    if (update.cartItemsDTO.length === 0) {
+      dispatch(actionCarts.FETCH_CART({}))
+      localStorage.removeItem('dataCart')
+      dispatch(actionCarts.COUNT_CART(0))
+    }
+    else {
+      dispatch(actionCarts.FETCH_CART(update))
+      localStorage.setItem('dataCart', JSON.stringify({ update }))
+      dispatch(actionCarts.COUNT_CART(update.cartItemsDTO.length))
+    }
+    history.push("/cart")
+  }
   function handleChange(value) {
     console.log(value);
   }
   function showItems() {
+    // const dataList = (cartList) ? cartList.cartItemsDTO : JSON.parse(localStorage.getItem('dataCart')).cartItemsDTO
+    console.log("showItems -> cartList.cartItemsDTO", cartList.cartItemsDTO)
     let resutl = "";
-    const items = cartList;
-    if (cartList.cartItemsDTO) {
+    // const items = cartList;
+    if (cartList) {
       resutl = cartList.cartItemsDTO.map((item, index) => {
         return (
-          <tr key={index}>
+          <tr key={index} >
             <td className="romove-item">
               <a title="Xóa" className="icon">
                 <i
                   className="fa fa-trash-o"
                   onClick={() =>
-                    deleteItem(item.productId, item.color, item.size, index)
+                    (localStorage.id) ? deleteItem(item.productId, item.color, item.size, index) : deleteItemClient(item.productId, item.quantity, item.price, index)
                   }
                 />
               </a>
