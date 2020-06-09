@@ -11,8 +11,8 @@ function Header1() {
     const userInfo = useSelector(state => state[MODULE_USER].user)
     const menu = (
         <Menu>
-            <Menu.Item key="0" icon={<SettingOutlined />} onClick={() => history.push("/information")} >
-                <Link to="/information" >
+            <Menu.Item key="0" icon={<SettingOutlined />} onClick={() => history.push("/information/account")} >
+                <Link to="/information/account" >
                     Quản lý tài khoản
           </Link>
             </Menu.Item>

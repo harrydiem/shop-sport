@@ -5,11 +5,11 @@ import { fetchLoading } from '../../common/utils/effect'
 import * as actionCarts from '../../actions/actionCarts'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
-import { useDispatch, useSelector } from 'react-redux'
-import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
+import { useDispatch, } from 'react-redux'
+// import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 function Detail(props) {
-    const cartList = useSelector(state => state[MODULE_CART].carts)
-    const countCart = useSelector(state => state[MODULE_CART].countCart)
+    // const cartList = useSelector(state => state[MODULE_CART].carts)
+    // const countCart = useSelector(state => state[MODULE_CART].countCart)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
     const [image, setimage] = useState({ name: '', url: '' })

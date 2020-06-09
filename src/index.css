@@ -149,3 +149,15 @@ legend {
   border-radius: 3px;
   /* height: 30px; */
 }
+
+.formControl .ant-input {
+  border-radius: 4px !important;
+  height: 34px;
+}
+
+.formControl .ant-select-lg {
+  font-size: 15px;
+}
+.formControl .ant-select-selector {
+  height: 36px !important;
+}

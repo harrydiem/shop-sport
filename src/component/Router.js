@@ -14,7 +14,10 @@ import Cart from '../pages/Cart/Cart'
 import Detail from '../pages/Detail/Detail'
 import Wishlists from '../pages/Wishlists/Wishlists'
 import Checkout from '../pages/Checkout/Checkout'
+import Account from '../pages/Information/Account'
 import Information from '../pages/Information/Information'
+import ChangePass from '../pages/Information/ChangePass'
+import Addresses from '../pages/Information/Addresses'
 // import Checkout2 from '../pages/Checkout/Checkout2'
 
 export class Router extends Component {
@@ -33,7 +36,15 @@ export class Router extends Component {
                                 <Route exact path='/wishlists' component={Wishlists} />
                                 <Route exact path='/checkout' component={Checkout} />
                                 <Route exact path='/myaccount' component={Login} />
-                                <Route exact path='/information' component={Information} />
+                                <Route path='/information/' component={Information}>
+                                    <Switch>
+                                        <Information>
+                                            <Route exact path="/information/account" component={Account} />
+                                            <Route exact path="/information/changepass" component={ChangePass} />
+                                            <Route exact path="/information/addresses" component={Addresses} />
+                                        </Information>
+                                    </Switch>
+                                </Route>
                                 <Route component={NOTFOUND404} />
                             </Switch>
                         </Main>
