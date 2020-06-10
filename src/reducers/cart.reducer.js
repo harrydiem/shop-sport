@@ -3,7 +3,14 @@ import * as cartConstain from '../constain/cartConstain'
 const initialState = {
     carts: (localStorage.dataCart) ? JSON.parse(localStorage.dataCart) : {},
     user: null,
-    countCart: (localStorage.id) ? 0 : (localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0
+    countCart: (localStorage.id) ? 0 : (localStorage.dataCart) ? JSON.parse(localStorage.dataCart).countCart : 0,
+    checkout: {
+        paymentMethod: "",
+        shipName: "",
+        shipPrice: 0,
+        userId: 0,
+        addressId: null
+    }
 }
 function todos(state = initialState, action) {
     switch (action.type) {
@@ -21,6 +28,11 @@ function todos(state = initialState, action) {
             return {
                 ...state,
                 countCart: action.payload
+            }
+        case cartConstain.CHECKOUT:
+            return {
+                ...state,
+                checkout: action.payload
             }
         default:
             return state

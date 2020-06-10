@@ -147,11 +147,6 @@ function Addresses() {
         getaddress()
     }, [])
 
-    const changeAddress = (index) => {
-        console.log("change,", index)
-        return true
-    }
-
     return (
         <div className="panel-group checkout-steps" id="accordion">
             {/* checkout-step-01  */}
@@ -200,7 +195,7 @@ function Addresses() {
                                                     <div className="col-md-3">
                                                         <label className='input-label '>
                                                             Địa chỉ
-                                                <div style={{ fontStyle: 'italic', display: 'contents' }}>{" ("}{index === 0 ? "Mặc định" : e.id}{")"}</div>
+                                                <div style={{ fontStyle: 'italic', display: 'contents' }}>{" ("}{index === 0 ? "Mặc định" : index}{")"}</div>
                                                         </label>
                                                     </div>
                                                     {(index === 0) ? ""
@@ -213,7 +208,7 @@ function Addresses() {
                                                                 <Button icon={<DeleteFilled />} type="link" danger onClick={() => deleteAddress(e.id)}>
                                                                     Xóa
                                                                </Button>
-                                                                <Button htmlType='submit' type='primary' disabled={changeAddress(index)} style={{ marginLeft: "20px" }}>Cập nhật</Button>
+                                                                <Button htmlType='submit' type='primary' style={{ marginLeft: "20px" }}>Cập nhật</Button>
                                                             </div>
 
                                                         </>}

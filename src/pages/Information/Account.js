@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 
 function Information() {
-    const [addess, setAddess] = useState([])
+    const [address, setAddress] = useState([])
     const { Option } = Select
     const [form] = Form.useForm()
     const onFinish = (value) => {
@@ -14,7 +14,7 @@ function Information() {
     }
 
     useEffect(() => {
-        async function getAddess() {
+        async function getAddress() {
 
             try {
                 let result = await fetchLoading({
@@ -27,15 +27,15 @@ function Information() {
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     console.log("Co Dia chi :", result.data)
-                    form.setFieldsValue({ selectAddess: result.data.data[0].id })
-                    setAddess(result.data.data)
+                    form.setFieldsValue({ selectAddress: result.data.data[0].id })
+                    setAddress(result.data.data)
                 }
             } catch (error) {
                 console.log(error)
                 message.error("Lỗi kết nối đến Server")
             }
         }
-        getAddess()
+        getAddress()
     }, [])
     function onChange(value) {
         console.log(`selected ${value}`);
@@ -103,7 +103,7 @@ function Information() {
                                         name='name'
                                         className='col-md-6'
                                         style={{ margin: "0 0 20px 0" }}
-                                        initialValue="Thái Diêm"
+                                        initialValue={localStorage.name}
                                     >
                                         <Input
 
@@ -120,7 +120,7 @@ function Information() {
                                         name='phone'
                                         className='col-md-6'
                                         style={{ marginBottom: "20px" }}
-                                        initialValue="0926015381"
+                                        initialValue={localStorage.phoneNumber}
                                     >
                                         <Input
 
@@ -141,49 +141,28 @@ function Information() {
                                             defaultValue="HCM -Q5 -P3"
                                         ></Input>
                                     </Form.Item> */}
-                                    <Form.Item
-                                        className='col-md-7'
-                                        style={{ marginBottom: "20px" }}
-                                        name="selectAddess"
-                                        id="selectAddess"
-                                    >
 
-                                        <Select
-                                            size="large"
-                                            showSearch
-                                            // placeholder="Chọn 1 địa chỉ"
-                                            optionFilterProp="children"
-                                            onChange={onChange}
-                                            onFocus={onFocus}
-                                            onBlur={onBlur}
-                                            onSearch={onSearch}
-                                            filterOption={(input, option) =>
+                                    {address ?
+                                        <div>
+                                            <div
+                                                className='col-md-6'
+                                                style={{ marginBottom: "20px", fontSize: "15px" }}
+                                            >
+                                                {address.length > 0 ? address[0].deliveryAddress : ''}
+                                            </div>
+                                            <div className='col-md-4'>
+                                                <Link to='/information/addresses'>
+                                                    <EditOutlined />
+                                                      Thay đổi địa chỉ mặc định
+                                                </Link>
+                                            </div>
+                                        </div>
+                                        : <div>Chưa có</div>
+                                    }
 
-                                                option.children.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            }
-                                        >
-
-                                            {addess
-                                                ? addess.map((e) => {
-                                                    return (
-                                                        <Option key={e.id} value={e.id}> {e.deliveryAddress}</Option>
-                                                    )
-                                                })
-                                                : <></>
-
-                                            }
-                                            {/*  <Option value="default">Hồ Chí Minh-Quận 5-Phường 3-273 An Dương Vương</Option>
-                                            <Option value="addess2">Hồ Chí Minh-Tân Bình-Phường 9-192/9 Âu Cơ </Option> */}
-
-                                        </Select>
-                                    </Form.Item>
-                                    <div className='col-md-3'>
-                                        <Link to='/information/addesses'>
-                                            <EditOutlined />
-                                            Chỉnh sửa
-                                      </Link>
-                                    </div>
                                 </div>
+
+
                                 <div />
                             </div>
                             <div className='row'>

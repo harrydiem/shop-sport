@@ -1,13 +1,19 @@
-import React from 'react'
-import { Form, Input, Button, Checkbox, Select } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Form, Input, Button, Checkbox, Select, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons'
+import { fetchLoading } from '../../common/utils/effect';
 // import { UserOutlined, LockOutlined } from '@ant-design/icons';
-const { Option } = Select
+// const [form] = Form.useForm()
+
 function CheckInfor() {
+    const { Option } = Select
+
 
     const onFinish = values => {
         console.log('Received values of form: ', values);
     }
+
+
 
     const formItemLayout = {
         labelCol: {
@@ -18,14 +24,6 @@ function CheckInfor() {
             xs: { span: 24 },
             sm: { span: 16 },
         },
-        // labelCol: {
-        //     xs: { span: 24 },
-        //     sm: { span: 8 },
-        // },
-        // wrapperCol: {
-        //     xs: { span: 24 },
-        //     sm: { span: 16 },
-        // },
     }
     function onChange(value) {
         console.log(`selected ${value}`);
@@ -42,6 +40,9 @@ function CheckInfor() {
     function onSearch(val) {
         console.log('search:', val);
     }
+
+
+
     return (
         <>
 
@@ -61,7 +62,7 @@ function CheckInfor() {
                             className='inputCheckout'
                             label="Email"
                             name="email"
-                            initialValue="thaidiem99@gmail.com"
+                            initialValue={localStorage.email}
                         >
                             <Input
                                 disabled
@@ -77,9 +78,10 @@ function CheckInfor() {
                             className='inputCheckout'
                             label="SĐT"
                             name="phoneNum"
-                            initialValue="0926015381"
+                            initialValue={localStorage.phoneNumber}
                         >
                             <Input
+                                disabled
                                 size='large'
                                 type="text"
                                 className="form-control unicase-form-control text-input"
@@ -92,9 +94,11 @@ function CheckInfor() {
                             className='inputCheckout'
                             label="Tên"
                             name="name"
-                            initialValue="Hán Thái Diêm"
+
+                            initialValue={localStorage.name}
                         >
                             <Input
+                                disabled
                                 size='large'
                                 type="text"
                                 className="form-control unicase-form-control text-input"
@@ -102,19 +106,6 @@ function CheckInfor() {
                             />
                         </Form.Item>
                     </div>
-                    {/* <Form.Item
-                        className='inputCheckout'
-                        label="Địa Chỉ"
-                        name="addess"
-                        initialValue="Hồ Chí Minh - Quận 5 - Phường 3 - 273 An Dương Vương"
-                    >
-                        <Input
-                            size='large'
-                            type="text"
-                            className="form-control unicase-form-control text-input"
-                            id="addess"
-                        />
-                    </Form.Item> */}
 
                     <Form.Item
                         label="Chọn Địa Chỉ"
@@ -139,64 +130,11 @@ function CheckInfor() {
                         >
                             <Option value="default">Hồ Chí Minh - Quận 5 - Phường 3 - 273 An Dương Vương</Option>
                             <Option value="addess2">Hồ Chí Minh - Tân Bình - Phường 9 - 192/9 Âu Cơ </Option>
-                            {/* <Option value="addess3"><img
-                                style={{ maxHeight: "20px" }}
-                                className="img-responsive"
-                                alt="s"
-                                src="http://localhost:3000/static/media/yoga-pink.acb4479f.jpg"
-                            /><span>Ninh Thuận - Ninh Phước - Phước Thuận - Phú Nhuận</span></Option> */}
                         </Select>
                         {/* <PlusOutlined /> */}
                     </Form.Item>
                 </Form>
             </div>
-
-
-            {/* <Form
-            {...formItemLayout}
-            style={{ width: '50%', display: 'inline-block' }}
-            name="normal_login"
-            className="login-form "
-            initialValues={{ remember: true }}
-            onFinish={onFinish}
-        >
-            <Form.Item
-                label="Email"
-                name="username"
-                rules={[{ required: true, message: 'Please input your Username!' }]}
-                initialValue="thaidiem99@gmail.com"
-            >
-
-                <Input name="username" disabled size="large" />
-            </Form.Item>
-            <Form.Item
-                name="password"
-                rules={[{ required: true, message: 'Please input your Password!' }]}
-            >
-                <Input
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    type="password"
-                    placeholder="Password"
-                />
-            </Form.Item>
-            <Form.Item>
-                <Form.Item name="remember" valuePropName="checked" noStyle>
-                    <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-
-                <a className="login-form-forgot" href="">
-                    Forgot password
-          </a>
-            </Form.Item>
-
-            <Form.Item>
-                <Button type="primary" htmlType="submit" className="login-form-button">
-                    Log in
-          </Button>
-          Or <a href="">register now!</a>
-            </Form.Item>
-        </Form> */}
-
 
         </>
     )
