@@ -65,12 +65,16 @@ function Login() {
         var loginLocal = {
           id: result.data.data.id,
           name: result.data.data.lastName,
+          email: result.data.data.email,
+          phoneNumber: result.data.data.phoneNumber,
           token: result.data.data.token,
         }
         await addLocalToCart(result.data.data.id)
         localStorage.setItem('token', loginLocal.token)
         localStorage.setItem('id', loginLocal.id)
         localStorage.setItem('name', loginLocal.name)
+        localStorage.setItem('email', loginLocal.email)
+        localStorage.setItem('phoneNumber', loginLocal.phoneNumber)
         dispatch(actionUser.FETCH_USER(result.data.data.id))
         localStorage.removeItem('dataCart')
         message.success("Đăng nhập thành công !")
@@ -111,7 +115,6 @@ function Login() {
       }
     }
   }
-
   return (
     <div className="container">
       <div className="sign-in-page">

@@ -1,17 +1,114 @@
 import React, { useState, useEffect } from 'react'
-import { Input, Form, Button, message } from 'antd'
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
+import { Input, Form, Button, message, Modal } from 'antd'
+import { DeleteFilled, EditFilled, FileAddOutlined } from '@ant-design/icons';
 import { fetchLoading } from '../../common/utils/effect'
 function Addresses() {
     const [address, setAddress] = useState([])
+    const [visible, setVisible] = useState(false);
+    const CreateAddress = ({ visible, onCreate, onCancel }) => {
+        return (
+            <Modal
+                visible={visible}
+                title="THÊM ĐỊA CHỈ"
+                okText="Thêm"
+                cancelText="Đóng"
+                onCancel={onCancel}
+                onOk={() => {
+                    form
+                        .validateFields()
+                        .then(values => {
+                            form.resetFields();
+                            onCreate(values);
+                        })
+                        .catch(info => {
+                            console.log('Cú pháp sai:', info);
+                        });
+                }}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="form_in_modal"
+                    initialValues={{
+                        modifier: 'public',
+                    }}
+                >
+                    <Form.Item
+                        name="cityCreate"
+                        label="Thành Phố/Tỉnh"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng không bỏ trống!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="districtCreate"
+                        label="Quận/Huyện"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng không bỏ trống!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="wardsCreate"
+                        label="Xã/Phường"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng không bỏ trống!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="addressCreate"
+                        label="Số nhà/Thôn"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng không bỏ trống!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        );
+    }
+    const onCreate = async (values) => {
+        console.log('Received values of form: ', values);
+        let addaddress = "" + values.cityCreate + "-" + values.districtCreate + "-" + values.wardsCreate + "-" + values.addressCreate
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/${localStorage.id}/addaddresses`,
+                method: 'POST',
+                data: { deliveryAddress: addaddress }
+            }).then(
+                message.success('Thêm thành công !')
+            )
+        } catch (e) {
+            console.log(e)
+            message.error('Đã có lỗi xảy ra !')
+        }
+        setVisible(false);
+        getaddress()
+    };
+
 
     const [form] = Form.useForm()
-
     const onFinish = (value) => {
-
         console.log("Cap nhat ", value)
         // for (var i = 0; i < address.length; i++) {
-
         // }
     }
     // const onFormFinish = (name) => {
@@ -26,6 +123,7 @@ function Addresses() {
     function deleteAddress(id) {
         console.log(id)
     }
+
     async function getaddress() {
 
         try {
@@ -48,6 +146,11 @@ function Addresses() {
     useEffect(() => {
         getaddress()
     }, [])
+
+    const changeAddress = (index) => {
+        console.log("change,", index)
+        return true
+    }
 
     return (
         <div className="panel-group checkout-steps" id="accordion">
@@ -93,7 +196,7 @@ function Addresses() {
                                             onFinish={onFinish}
                                         >
                                             <div className="address">
-                                                <div className="row">
+                                                <div className="row" style={{ marginBottom: "5px" }}>
                                                     <div className="col-md-3">
                                                         <label className='input-label '>
                                                             Địa chỉ
@@ -104,13 +207,16 @@ function Addresses() {
                                                         : <><div className='col-md-3' style={{ padding: 0 }}>
                                                             <Button icon={<EditFilled />} type="link" onClick={() => setDefaultAddress(e.id)}>
                                                                 Đặt làm mặc định
-                                                      </Button>
+                                                             </Button>
                                                         </div>
-                                                            <div className='col-md-4' style={{ padding: 0 }}>
+                                                            <div className='col-md-5' style={{ padding: 0 }}>
                                                                 <Button icon={<DeleteFilled />} type="link" danger onClick={() => deleteAddress(e.id)}>
                                                                     Xóa
-                                                     </Button>
-                                                            </div></>}
+                                                               </Button>
+                                                                <Button htmlType='submit' type='primary' disabled={changeAddress(index)} style={{ marginLeft: "20px" }}>Cập nhật</Button>
+                                                            </div>
+
+                                                        </>}
 
                                                 </div>
                                                 <div className="row">
@@ -119,7 +225,7 @@ function Addresses() {
                                                     <div className='formControl'>
 
                                                         <Form.Item
-                                                            name={"city" + e.id}
+                                                            name={"city"}
                                                             className='col-md-6'
                                                             style={{ marginBottom: "20px" }}
                                                             initialValue={cutAddress(e.deliveryAddress)[0]}
@@ -137,7 +243,7 @@ function Addresses() {
                                                     <div className='col-md-2'>Quận/Huyện: </div>
                                                     <div className='formControl'>
                                                         <Form.Item
-                                                            name={"district" + e.id}
+                                                            name={"district"}
                                                             className='col-md-6'
                                                             style={{ marginBottom: "20px" }}
                                                             initialValue={cutAddress(e.deliveryAddress)[1]}
@@ -156,7 +262,7 @@ function Addresses() {
                                                     <div className='col-md-2'>Phường/Xã:</div>
                                                     <div className='formControl'>
                                                         <Form.Item
-                                                            name={"wards" + e.id}
+                                                            name={"wards"}
                                                             className='col-md-6'
                                                             style={{ marginBottom: "20px" }}
                                                             initialValue={cutAddress(e.deliveryAddress)[2]}
@@ -171,10 +277,10 @@ function Addresses() {
                                                 </div>
                                                 <div className="row">
                                                     <div className='col-md-1'></div>
-                                                    <div className='col-md-2'>Thôn/Số nhà:</div>
+                                                    <div className='col-md-2'>Số nhà/Thôn:</div>
                                                     <div className='formControl'>
                                                         <Form.Item
-                                                            name={"address" + e.id}
+                                                            name={"address"}
                                                             className='col-md-6'
                                                             style={{ marginBottom: "20px" }}
                                                             initialValue={cutAddress(e.deliveryAddress)[3]}
@@ -188,14 +294,14 @@ function Addresses() {
                                                     <div />
                                                 </div>
                                             </div>
-                                            <div className='row'>
+                                            {/* <div className='row'>
                                                 <div className='col-md-3'></div>
                                                 <div className='col-md-6'
                                                     style={{ padding: 0 }}>
-                                                    <Button htmlType='submit' type='primary'>CẬP NHẬT</Button>
+                                                    <Button htmlType='submit' type='primary' style={{ marginButtom: "5px" }} >Cập nhật</Button>
                                                 </div>
-                                            </div>
-
+                                            </div> */}
+                                            <hr />
 
                                         </Form>
                                     )
@@ -204,6 +310,24 @@ function Addresses() {
                             }
 
                         </Form.Provider>
+
+                        <div>
+                            <Button type='primary'
+                                onClick={() => {
+                                    setVisible(true);
+                                }}
+                            >
+                                <FileAddOutlined />
+                                    Thêm địa chỉ mới
+                                </Button>
+                            <CreateAddress
+                                visible={visible}
+                                onCreate={onCreate}
+                                onCancel={() => {
+                                    setVisible(false);
+                                }}
+                            />
+                        </div>
 
 
                     </div>

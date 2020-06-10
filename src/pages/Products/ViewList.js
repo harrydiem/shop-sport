@@ -23,7 +23,7 @@ function ViewList() {
                                     <div className="row product-list-row">
                                         <div className="col col-sm-4 col-lg-4">
                                             <div className="product-image">
-                                                <div className="image"><Link to={"/detail/" + product.id}><img src={imgGym} alt={product.name} /> </Link></div>
+                                                <div className="image"><Link to={"/detail/" + product.id}><img src={(product.productImages[0]) ? "http://localhost:5000" + product.productImages[0].url : imgGym} alt={product.name} alt={product.name} /> </Link></div>
                                             </div>
 
                                         </div>
@@ -38,7 +38,9 @@ function ViewList() {
 
                                                 <div className="product-price"> <span className="price">{formatNumber(product.currentPrice, '.', '.')} VND</span> <strike className="price-before-discount" style={{ color: '#f75b5b', fontSize: "12px" }}>{formatNumber(product.price, '.', '.')} VND</strike> </div>
 
-                                                <div className="description m-t-10">Suspendisse posuere arcu diam, id accumsan eros pharetra ac. Nulla enim risus, facilisis bibendum gravida eget, lacinia id purus. Suspendisse posuere arcu diam, id accumsan eros pharetra ac. Nulla enim risus, facilisis bibendum gravida eget.</div>
+                                                <div className="description m-t-10">
+                                                    {/* Suspendisse posuere arcu diam, id accumsan eros pharetra ac. Nulla enim risus, facilisis bibendum gravida eget, lacinia id purus. Suspendisse posuere arcu diam, id accumsan eros pharetra ac. Nulla enim risus, facilisis bibendum gravida eget. */}
+                                                </div>
                                                 <div className="cart clearfix animate-effect">
                                                     <div className="action">
                                                         <ul className="list-unstyled">
@@ -54,8 +56,14 @@ function ViewList() {
                                         </div>
 
                                     </div>
-
-                                    <div className="tag new"><span>new</span></div>
+                                    {product.price === product.currentPrice ? "" :
+                                        (<div className="tag hot">
+                                            <span>SALE</span>
+                                        </div>)
+                                    }
+                                    {/* {parseInt(product.price)===parseInt(product.promotionPrice)) ? "" : (<div className="tag HOT"><span>-20%</span></div>)} */}
+                                    {product.quantity === 0 ? (<div className="tag sale"><span>HẾT</span></div>) : ""}
+                                    {/* <div className="tag new"><span>new</span></div> */}
                                 </div>
 
                             </div>

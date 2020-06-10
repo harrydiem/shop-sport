@@ -86,11 +86,10 @@ function Information() {
                                         name='email'
                                         className='col-md-6'
                                         style={{ margin: "0 0 20px 0" }}
-                                        initialValue='admin@gmail.com'
+                                        initialValue={localStorage.getItem('email')}
                                     >
                                         <Input
                                             disabled
-
                                         ></Input>
                                     </Form.Item>
 

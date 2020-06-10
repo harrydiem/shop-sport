@@ -19,7 +19,9 @@ function ItemGird() {
                             <div className="product">
                                 <div className="product-image"
                                 >
-                                    <div className="image"><Link to={"/detail/" + product.id}><img src={(product.productImages[0]) ? "http://localhost:5000" + product.productImages[0].url : imgYoga} alt={product.name} /></Link></div>
+                                    <div className="image">
+                                        <Link to={"/detail/" + product.id}><img src={(product.productImages[0]) ? "http://localhost:5000" + product.productImages[0].url : imgYoga} alt={product.name} /></Link>
+                                    </div>
                                     {product.price === product.currentPrice ? "" :
                                         (<div className="tag hot">
                                             <span>SALE</span>
