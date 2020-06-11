@@ -9,7 +9,7 @@ const initialState = {
         shipName: "",
         shipPrice: 0,
         userId: 0,
-        addressId: null
+        addressId: 0
     }
 }
 function todos(state = initialState, action) {

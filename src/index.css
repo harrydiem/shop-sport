@@ -83,13 +83,13 @@ code {
     padding-left: 15px !important;
   } */
 .steps-content {
-  margin-top: 16px;
+  /* margin-top: 16px; */
   /* border: 1px dashed #e9e9e9; */
   /* border-radius: 2px; */
   /* background-color: #fafafa; */
   /* min-height: 200px; */
   text-align: center;
-  padding-top: 12px;
+  /* padding-top: 12px; */
 }
 
 .steps-action {
