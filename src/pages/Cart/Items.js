@@ -9,17 +9,45 @@ import { fetchLoading } from "../../common/utils/effect";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 function Items(props) {
   const { Option } = Select;
-
-  function onChange(productId, quantity, index) {  //Quantity
+  async function onChange(productId, quantity, index) {  //Quantity
     console.log("Change , Index ,value:", productId, index, quantity)
     if (localStorage.id) {
       let update = cartList
-      update.totalPrice -= update.cartItemsDTO[index].price * update.cartItemsDTO[index].quantity // Xóa giá trong tổng trước
-      update.cartItemsDTO[index].quantity = quantity
-      update.totalPrice += update.cartItemsDTO[index].quantity * update.cartItemsDTO[index].price
-      console.log(update)
-      // dispatch(actionCarts.FETCH_CART(update))
+      let newUpdate = {
+        cartId: localStorage.id,
+        productId: update.cartItemsDTO[index].productId,
+        color: update.cartItemsDTO[index].color,
+        size: update.cartItemsDTO[index].size,
+        quantity: quantity
+      }// Xóa giá trong tổng trước
+      console.log("object", newUpdate)
 
+      try {
+        let result = await fetchLoading({
+          url: "http://localhost:5000/api/Carts",
+          method: "POST",
+          data: {
+            cartId: localStorage.id,
+            productId: update.cartItemsDTO[index].productId,
+            color: update.cartItemsDTO[index].color,
+            size: update.cartItemsDTO[index].size,
+            quantity: quantity
+          }
+        });
+        let statusProducts = result.status;
+        if (statusProducts === 200) {
+          props.getCart();
+        } else {
+          message.error("Đã xảy ra lỗi")
+        }
+      } catch (error) {
+        console.log(error);
+        message.error("Lỗi kết nối đến Server");
+      }
+
+
+
+      //dispatch(actionCarts.FETCH_CART(update))
     } else {
       let update = cartList
       update.totalPrice -= update.cartItemsDTO[index].price * update.cartItemsDTO[index].quantity // Xóa giá trong tổng trước
@@ -66,7 +94,6 @@ function Items(props) {
   }
 
   function deleteItemClient(productId, quantity, price, index) {
-
     console.log("Xóa productID , Index :", productId, index)
     let update = cartList
     update.cartItemsDTO.splice(index, 1)

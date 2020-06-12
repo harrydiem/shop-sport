@@ -9,11 +9,9 @@ import { useDispatch, useSelector, } from 'react-redux'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 function Detail(props) {
     const cartList = useSelector(state => state[MODULE_CART].carts)
-    console.log("Detail -> cartList", cartList)
     // const countCart = useSelector(state => state[MODULE_CART].countCart)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
-    console.log(state)
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
     const { Option } = Select;
@@ -33,7 +31,7 @@ function Detail(props) {
             let statusProducts = result.status
             GetQuantity = result.data.data// Gán = Số lượng sp theo Size trả về
             if (statusProducts === 200) {
-                console.log("onFinish -> GetQuantity", GetQuantity)
+                GetQuantity = result.data.data
             } else {
                 message.error("Đã xảy ra lỗi !")
             }
@@ -41,95 +39,74 @@ function Detail(props) {
             console.log(error)
             message.error("Lỗi kết nối đến Server")
         }
-        console.log("Can` add :", values.quantity)
         if (values.quantity > GetQuantity) {//Số lượng vào > số lượng có
             message.warning(`Sản phầm màu :${values.selectColor} size: ${values.selectSize} không đủ số lượng !`)
         }
         else { //Số lượng có đủ
+            let countItemInCart = 0
+            if (cartList) {
+                if (cartList.cartItemsDTO) {
+                    for (var i = 0; i < cartList.cartItemsDTO.length; i++) {
+                        if (parseInt(cartList.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && cartList.cartItemsDTO[i].color === values.selectColor && cartList.cartItemsDTO[i].size === values.selectSize)//Trung SP , Tang Num                                                 
+                            countItemInCart = cartList.cartItemsDTO[i].quantity + parseInt(values.quantity) //     numcheck=numcart+ numadd   
+                        break
 
-            if (localStorage.id) { //Login emty
-                try {
-                    let result = await fetchLoading({
-                        url: "http://localhost:5000/api/Carts/",
-                        method: 'POST',
-                        data: {
-                            cartId: localStorage.id,
-                            productId: props.match.params.id,
-                            color: "" + values.selectColor,
-                            size: "" + values.selectSize,
-                            quantity: values.quantity
-                        }
-                    })
-                    let statusProducts = result.status
-                    if (statusProducts === 200) {
-                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
-                        await getCart() // Load xong fucn sẻ trả về cartList mới và tăng CountCart
-
-                    } else {
-                        message.error("Đã xảy ra lỗi !")
                     }
-                } catch (error) {
-                    console.log(error)
-                    message.error("Lỗi kết nối đến Server")
                 }
-            } else //login false
-            {
-                if (localStorage.dataCart) { //Local->dataCart find
-                    const getCart = JSON.parse(localStorage.dataCart)
-                    var updateCart = getCart
-                    var checkPoint = false
-                    var add = true
-                    for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
-                        if (parseInt(updateCart.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && updateCart.cartItemsDTO[i].color === values.selectColor && updateCart.cartItemsDTO[i].size === values.selectSize) {//Trung SP , Tang Num                                                 
-                            var updateCartTest = updateCart.cartItemsDTO[i].quantity + parseInt(values.quantity) //     num+=numadd
-                            checkPoint = true
-                            if (updateCartTest > 5) //num >5
-                            {
-                                add = false
-                                message.warning('Số lượng mỗi sản phẩm trong giỏ tối đa là 5')
-                                updateCart = getCart //Ko thay đổi Cart
+            }
 
+
+            if (countItemInCart > 5) {
+                message.warning('Số lượng mỗi sản phẩm trong giỏ hàng không vượt quá 5 sản phẩm')
+            } else { //đủ số lượng và ko > 5
+                if (localStorage.id) { //Login emty
+
+                    try {
+                        let result = await fetchLoading({
+                            url: "http://localhost:5000/api/Carts/",
+                            method: 'POST',
+                            data: {
+                                cartId: localStorage.id,
+                                productId: props.match.params.id,
+                                color: "" + values.selectColor,
+                                size: "" + values.selectSize,
+                                quantity: values.quantity
+                            }
+                        })
+                        let statusProducts = result.status
+                        if (statusProducts === 200) {
+                            message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                            await getCart() // Load xong fucn sẻ trả về cartList mới và tăng CountCart
+
+                        } else {
+                            message.error("Đã xảy ra lỗi !")
+                        }
+                    } catch (error) {
+                        console.log(error)
+                        message.error("Lỗi kết nối đến Server")
+                    }
+                } else //login false
+                {
+                    if (localStorage.dataCart) { //Local->dataCart find
+                        const getCart = JSON.parse(localStorage.dataCart)
+                        var updateCart = getCart
+                        var checkPoint = false
+                        for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
+                            if (parseInt(updateCart.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && updateCart.cartItemsDTO[i].color === values.selectColor && updateCart.cartItemsDTO[i].size === values.selectSize) {//Trung SP , Tang Num                                                 
+
+                                updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity) //Price += Price * numAdd
+                                updateCart.cartItemsDTO[i].quantity += parseInt(values.quantity) //     num+=numadd
+                                checkPoint = true
                                 break
                             }
                             else {
-                                updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity) //Price += Price * numAdd 
-                                updateCart.cartItemsDTO[i].quantity += parseInt(values.quantity) //     num+=numadd
-
-                                break
+                                checkPoint = false
                             }
-                        } else {
-                            checkPoint = false
                         }
-                    }
-                    if (!checkPoint) { //ko tìm thấy thì thêm mới
-                        updateCart.countCart += 1
-                        updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity)
-                        updateCart.cartItemsDTO.push({
-                            productId: parseInt(props.match.params.id),
-                            productName: state.name,
-                            size: values.selectSize,
-                            color: values.selectColor,
-                            price: state.currentPrice,
-                            quantity: values.quantity,
-                            productImageDTO: {
-                                url: state.productImages[0].url,
-                            }
-                        })
-                    }
-                    localStorage.setItem('dataCart', JSON.stringify(updateCart))
-                    dispatch(actionCarts.FETCH_CART(updateCart)) // Sẽ bị xóa khi Có Login
-                    dispatch(actionCarts.COUNT_CART(updateCart.countCart))
-                    if (add) { //Tất cả đều đúng thì add 
-                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
-                    }
-
-                }
-                else {//Local->dataCart Not Found
-                    let dataCartNew = {
-                        countCart: 1,
-                        totalPrice: parseInt(state.currentPrice) * parseInt(values.quantity),
-                        cartItemsDTO: [
-                            {
+                        if (!checkPoint) { //ko tìm thấy thì thêm mới
+                            updateCart.countCart += 1
+                            updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity)
+                            updateCart.cartItemsDTO.push({
                                 productId: parseInt(props.match.params.id),
                                 productName: state.name,
                                 size: values.selectSize,
@@ -139,15 +116,40 @@ function Detail(props) {
                                 productImageDTO: {
                                     url: state.productImages[0].url,
                                 }
-                            }
-                        ]
+                            })
+                        }
+                        localStorage.setItem('dataCart', JSON.stringify(updateCart))
+                        dispatch(actionCarts.FETCH_CART(updateCart)) // Sẽ bị xóa khi Có Login
+                        dispatch(actionCarts.COUNT_CART(updateCart.countCart))
+                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+
                     }
-                    localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
-                    dispatch(actionCarts.COUNT_CART(1))
-                    dispatch(actionCarts.FETCH_CART(dataCartNew))
-                    message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                    else {//Local->dataCart Not Found
+                        let dataCartNew = {
+                            countCart: 1,
+                            totalPrice: parseInt(state.currentPrice) * parseInt(values.quantity),
+                            cartItemsDTO: [
+                                {
+                                    productId: parseInt(props.match.params.id),
+                                    productName: state.name,
+                                    size: values.selectSize,
+                                    color: values.selectColor,
+                                    price: state.currentPrice,
+                                    quantity: values.quantity,
+                                    productImageDTO: {
+                                        url: state.productImages[0].url,
+                                    }
+                                }
+                            ]
+                        }
+                        localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
+                        dispatch(actionCarts.COUNT_CART(1))
+                        dispatch(actionCarts.FETCH_CART(dataCartNew))
+                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                    }
                 }
             }
+
         }
 
     }
@@ -174,7 +176,6 @@ function Detail(props) {
     }
 
     function handleChangeColor(value, option) {
-        console.log("handleChangeColor -> option", option)
         getImageByColor(option.key)
         getSize(option.value)
     }
@@ -204,7 +205,6 @@ function Detail(props) {
     }
 
     async function getSize(color) {
-        console.log("Mau: ", color)
         try {
             let result = await fetchLoading({
                 url: `http://localhost:5000/api/Products/${props.match.params.id}/GetSizes`,
@@ -216,9 +216,7 @@ function Detail(props) {
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
-                console.log("SIZE:", result.data.data)
                 form.setFieldsValue({ selectSize: result.data.data[0] }) //
-
 
             } else {
                 message.error("Đã có lỗi xảy ra !")
