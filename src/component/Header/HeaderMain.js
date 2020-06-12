@@ -27,6 +27,7 @@ function HeaderMain() {
         let statusProducts = result.status
         if (statusProducts === 200) {
           dispatch(actionCarts.COUNT_CART(result.data.data.cartItemsDTO.length))
+          dispatch(actionCarts.FETCH_CART(result.data.data))
           localStorage.setItem('dataCart', JSON.stringify({ countCart: result.data.data.cartItemsDTO.length })) //Cong voi so luong trong GH co san
         } else {//Bad Request => 0
           dispatch(actionCarts.COUNT_CART(0))

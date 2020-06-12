@@ -161,3 +161,18 @@ legend {
 .formControl .ant-select-selector {
   height: 36px !important;
 }
+.ant-page-header-content {
+  font-size: 14px;
+  font-weight: 500;
+}
+.menuinfo > li {
+  display: flex;
+}
+
+.menuinfo > li :hover {
+  background-color: #edefef;
+}
+
+/* .menuinfo > span {
+  margin: 14px 10px;
+} */

@@ -5,85 +5,106 @@ import { fetchLoading } from '../../common/utils/effect'
 import * as actionCarts from '../../actions/actionCarts'
 import formatNumber from '../../common/utils/formatNumber'
 import { HeartFilled } from '@ant-design/icons'
-import { useDispatch, } from 'react-redux'
-// import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
+import { useDispatch, useSelector, } from 'react-redux'
+import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 function Detail(props) {
-    // const cartList = useSelector(state => state[MODULE_CART].carts)
+    const cartList = useSelector(state => state[MODULE_CART].carts)
+    console.log("Detail -> cartList", cartList)
     // const countCart = useSelector(state => state[MODULE_CART].countCart)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
+    console.log(state)
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
     const { Option } = Select;
+
     async function onFinish(values) {
-        if (localStorage.id) { //Login emty
-
-            try {
-                let result = await fetchLoading({
-                    url: "http://localhost:5000/api/Carts/",
-                    method: 'POST',
-                    data: {
-                        cartId: localStorage.id,
-                        productId: props.match.params.id,
-                        color: "" + values.selectColor,
-                        size: "" + values.selectSize,
-                        quantity: values.quantity
-                    }
-                })
-                let statusProducts = result.status
-                if (statusProducts === 200) {
-                    message.success("Sản phẩm đã được thêm vào giỏ hàng !")
-                    await getCart() // Load xong fucn sẻ trả về cartList mới và tăng CountCart
-
-                } else {
-                    message.error("Đã xảy ra lỗi !")
+        let GetQuantity = values.quantity + 1 //Khai báo mặc định là luôn lớn hơn số lượng đã chọn
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Products/${props.match.params.id}/GetQuantity`,
+                method: 'GET',
+                params: {
+                    productId: props.match.params.id,
+                    Color: "" + values.selectColor,
+                    Size: "" + values.selectSize,
                 }
-            } catch (error) {
-                console.log(error)
-                message.error("Lỗi kết nối đến Server")
+            })
+            let statusProducts = result.status
+            GetQuantity = result.data.data// Gán = Số lượng sp theo Size trả về
+            if (statusProducts === 200) {
+                console.log("onFinish -> GetQuantity", GetQuantity)
+            } else {
+                message.error("Đã xảy ra lỗi !")
             }
-        } else //login false
-        {
-            if (localStorage.dataCart) { //Local->dataCart find
-                const getCart = JSON.parse(localStorage.dataCart)
-                var updateCart = getCart
-                var checkPoint = false
-                for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
-                    if (parseInt(updateCart.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && updateCart.cartItemsDTO[i].color === values.selectColor && updateCart.cartItemsDTO[i].size === values.selectSize) {//Trung SP , Tang Num
-                        updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity) // Sau Khi đc tăng sẽ cộng thêm cái cũ
-                        updateCart.cartItemsDTO[i].quantity += parseInt(values.quantity) //Tăng            
-                        checkPoint = true
-                        break
-                    } else {
-                        checkPoint = false
-                    }
-                }
-                if (!checkPoint) {
-                    updateCart.countCart += 1
-                    updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity)
-                    updateCart.cartItemsDTO.push({
-                        productId: parseInt(props.match.params.id),
-                        productName: state.name,
-                        size: values.selectSize,
-                        color: values.selectColor,
-                        price: state.currentPrice,
-                        quantity: values.quantity,
-                        productImageDTO: {
-                            url: state.productImages[0].url,
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+        console.log("Can` add :", values.quantity)
+        if (values.quantity > GetQuantity) {//Số lượng vào > số lượng có
+            message.warning(`Sản phầm màu :${values.selectColor} size: ${values.selectSize} không đủ số lượng !`)
+        }
+        else { //Số lượng có đủ
+
+            if (localStorage.id) { //Login emty
+                try {
+                    let result = await fetchLoading({
+                        url: "http://localhost:5000/api/Carts/",
+                        method: 'POST',
+                        data: {
+                            cartId: localStorage.id,
+                            productId: props.match.params.id,
+                            color: "" + values.selectColor,
+                            size: "" + values.selectSize,
+                            quantity: values.quantity
                         }
                     })
+                    let statusProducts = result.status
+                    if (statusProducts === 200) {
+                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                        await getCart() // Load xong fucn sẻ trả về cartList mới và tăng CountCart
+
+                    } else {
+                        message.error("Đã xảy ra lỗi !")
+                    }
+                } catch (error) {
+                    console.log(error)
+                    message.error("Lỗi kết nối đến Server")
                 }
-                localStorage.setItem('dataCart', JSON.stringify(updateCart))
-                dispatch(actionCarts.FETCH_CART(updateCart)) // Sẽ bị xóa khi Có Login
-                dispatch(actionCarts.COUNT_CART(updateCart.countCart))
-                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
-            }
-            else {//Local->dataCart Not Found
-                let dataCartNew = {
-                    countCart: 1,
-                    totalPrice: parseInt(state.currentPrice) * parseInt(values.quantity),
-                    cartItemsDTO: [
-                        {
+            } else //login false
+            {
+                if (localStorage.dataCart) { //Local->dataCart find
+                    const getCart = JSON.parse(localStorage.dataCart)
+                    var updateCart = getCart
+                    var checkPoint = false
+                    var add = true
+                    for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
+                        if (parseInt(updateCart.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && updateCart.cartItemsDTO[i].color === values.selectColor && updateCart.cartItemsDTO[i].size === values.selectSize) {//Trung SP , Tang Num                                                 
+                            var updateCartTest = updateCart.cartItemsDTO[i].quantity + parseInt(values.quantity) //     num+=numadd
+                            checkPoint = true
+                            if (updateCartTest > 5) //num >5
+                            {
+                                add = false
+                                message.warning('Số lượng mỗi sản phẩm trong giỏ tối đa là 5')
+                                updateCart = getCart //Ko thay đổi Cart
+
+                                break
+                            }
+                            else {
+                                updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity) //Price += Price * numAdd 
+                                updateCart.cartItemsDTO[i].quantity += parseInt(values.quantity) //     num+=numadd
+
+                                break
+                            }
+                        } else {
+                            checkPoint = false
+                        }
+                    }
+                    if (!checkPoint) { //ko tìm thấy thì thêm mới
+                        updateCart.countCart += 1
+                        updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity)
+                        updateCart.cartItemsDTO.push({
                             productId: parseInt(props.match.params.id),
                             productName: state.name,
                             size: values.selectSize,
@@ -93,15 +114,42 @@ function Detail(props) {
                             productImageDTO: {
                                 url: state.productImages[0].url,
                             }
-                        }
-                    ]
+                        })
+                    }
+                    localStorage.setItem('dataCart', JSON.stringify(updateCart))
+                    dispatch(actionCarts.FETCH_CART(updateCart)) // Sẽ bị xóa khi Có Login
+                    dispatch(actionCarts.COUNT_CART(updateCart.countCart))
+                    if (add) { //Tất cả đều đúng thì add 
+                        message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                    }
+
                 }
-                localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
-                dispatch(actionCarts.COUNT_CART(1))
-                dispatch(actionCarts.FETCH_CART(dataCartNew))
-                message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                else {//Local->dataCart Not Found
+                    let dataCartNew = {
+                        countCart: 1,
+                        totalPrice: parseInt(state.currentPrice) * parseInt(values.quantity),
+                        cartItemsDTO: [
+                            {
+                                productId: parseInt(props.match.params.id),
+                                productName: state.name,
+                                size: values.selectSize,
+                                color: values.selectColor,
+                                price: state.currentPrice,
+                                quantity: values.quantity,
+                                productImageDTO: {
+                                    url: state.productImages[0].url,
+                                }
+                            }
+                        ]
+                    }
+                    localStorage.setItem('dataCart', JSON.stringify(dataCartNew))
+                    dispatch(actionCarts.COUNT_CART(1))
+                    dispatch(actionCarts.FETCH_CART(dataCartNew))
+                    message.success("Sản phẩm đã được thêm vào giỏ hàng !")
+                }
             }
         }
+
     }
     async function getCart() {
         try {
@@ -126,12 +174,12 @@ function Detail(props) {
     }
 
     function handleChangeColor(value, option) {
+        console.log("handleChangeColor -> option", option)
         getImageByColor(option.key)
+        getSize(option.value)
     }
-    async function getImageByColor(value) {
-
+    async function getImageByColor(value) {//value is idColor -_-
         try {
-
             let result = await fetchLoading({
                 url: "http://localhost:5000/api/products/" + props.match.params.id + "/" + value,
                 method: 'GET',
@@ -140,10 +188,9 @@ function Detail(props) {
             let statusProducts = result.status
             if (statusProducts === 200) {
                 if (result.data.data.length > 0) {
-                    setstate({ ...state, productImages: result.data.data })
-                    setimage({ name: result.data.data[0].name, url: result.data.data[0].url })
+                    // setstate({ ...state, productImages: result.data.data })
+                    setimage({ name: result.data.data[0].name, url: result.data.data[0].url, productImages: result.data.data })
                 } else console.log("Đã xảy ra lỗi")
-
             } else {
                 message.error("Đã xảy ra lỗi")
             }
@@ -153,51 +200,81 @@ function Detail(props) {
         }
     }
     function handleChangeSize(value) {
-        // console.log(`selected ${value}`);
+        // console.log(`selected  Size ${value}`);
+    }
+
+    async function getSize(color) {
+        console.log("Mau: ", color)
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Products/${props.match.params.id}/GetSizes`,
+                method: 'GET',
+                params: {
+                    productId: props.match.params.id,
+                    Color: color
+                }
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                console.log("SIZE:", result.data.data)
+                form.setFieldsValue({ selectSize: result.data.data[0] }) //
+
+
+            } else {
+                message.error("Đã có lỗi xảy ra !")
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+    }
+    async function getDetail() {
+        try {
+            let result = await fetchLoading({
+                url: "http://localhost:5000/api/products/" + props.match.params.id,
+                method: 'GET',
+                params: props.match.params.id
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                setstate(result.data.data)
+                // setimage({
+                //     name: result.data.data.productImages[0].name,
+                //     url: result.data.data.productImages[0].url
+                // })
+                form.setFieldsValue({ selectColor: result.data.data.colors[0].color })
+                // form.setFieldsValue({ selectSize: result.data.data.sizes[0] }) //
+                await getSize(result.data.data.colors[0].color)
+                await getImageByColor(result.data.data.colors[0].id)
+
+            } else {
+                message.error("Đã có lỗi xảy ra !")
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
     }
 
     useEffect(() => {
-        async function getDetail() {
-            try {
-                let result = await fetchLoading({
-                    url: "http://localhost:5000/api/products/" + props.match.params.id,
-                    method: 'GET',
-                    params: props.match.params.id
-                })
-                let statusProducts = result.status
-                if (statusProducts === 200) {
-                    setstate(result.data.data)
-                    setimage({
-                        name: result.data.data.productImages[0].name,
-                        url: result.data.data.productImages[0].url
-                    })
-                    form.setFieldsValue({ selectColor: result.data.data.colors[0].color })
-                    form.setFieldsValue({ selectSize: result.data.data.sizes[0] })
-                } else {
-                    message.error("Đã có lỗi xảy ra !")
-                }
-            } catch (error) {
-                console.log(error)
-                message.error("Lỗi kết nối đến Server")
-            }
-        }
+
         getDetail()
         return () => {
             //cleanup
         }
     }, [])
     return (
-        <div className="container">
+        <div className="container" style={{ width: "80%" }}>
             <div className="row single-product">
-                <div className="col-md-3 sidebar">
+                {/* <div className="col-md-3 sidebar">
                     <div className="sidebar-module-container">
                         <div className="home-banner outer-top-n">
                             <img src={imgAdv} alt="adad" />
                         </div>
                     </div>
-                </div>
+                </div> */}
                 {/* /.sidebar */}
-                <div className="col-md-9">
+                <div className="col-md-12">
                     <div className="detail-block">
                         <div
                             className="row  wow fadeInUp animated"
@@ -255,8 +332,8 @@ function Detail(props) {
                                                             display: "block",
                                                         }}
                                                     >
-                                                        {(state.productImages)
-                                                            ? state.productImages.map((imageList, index) => {
+                                                        {(image.productImages)
+                                                            ? image.productImages.map((imageList, index) => {
                                                                 return (
 
                                                                     <div className="owl-item" style={{ width: 80 }} key={index}>
@@ -358,7 +435,7 @@ function Detail(props) {
                                         >
 
                                             <div className="row">
-                                                <div className="col-sm-5" style={{ padding: 0 }}>
+                                                <div className="col-sm-3" style={{ padding: 0 }}>
                                                     {/* <span className="label" style={{ marginRight: 2 }} >Màu:</span> */}
                                                     <Form.Item
                                                         label="Màu :"
@@ -378,7 +455,7 @@ function Detail(props) {
 
 
                                                 </div>
-                                                <div className="col-sm-4" style={{ padding: 0 }}>
+                                                <div className="col-sm-3" style={{ padding: 0 }}>
 
                                                     <Form.Item
                                                         label="Kích cỡ:"

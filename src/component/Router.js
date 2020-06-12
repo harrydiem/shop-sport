@@ -44,6 +44,7 @@ export class Router extends Component {
                                             <Route exact path="/information/account" component={Account} />
                                             <Route exact path="/information/changepass" component={ChangePass} />
                                             <Route exact path="/information/addresses" component={Addresses} />
+                                            <Route exact path="/information/orders" component={Orders} />
                                         </Information>
                                     </Switch>
                                 </Route>

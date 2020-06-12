@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { ReloadOutlined, ScheduleOutlined, UserOutlined, EnvironmentOutlined, SolutionOutlined, SafetyOutlined } from '@ant-design/icons'
 
 export class Information extends Component {
     render() {
@@ -17,25 +18,23 @@ export class Information extends Component {
                                         <div className="panel panel-default">
                                             <div className="panel-heading">
                                                 <h4 className="unicase-checkout-title">
-                                                    Quản lý tài khoản
+                                                    <SafetyOutlined />   Quản lý tài khoản
                                           </h4>
                                             </div>
                                             <div >
-                                                <ul className="nav nav-checkout-progress list-unstyled">
+                                                <ul className="nav nav-checkout-progress list-unstyled menuinfo">
                                                     <li>
-                                                        <Link to='/information/account'>Thông tin tài khoản</Link>
+
+                                                        <SolutionOutlined style={{ margin: "14px 10px" }} /> <Link to='/information/account'>THÔNG TIN TÀI KHOẢN</Link>
                                                     </li>
                                                     <li>
-                                                        <Link to='/information/addresses' >Địa chỉ của tôi</Link>
+                                                        <EnvironmentOutlined style={{ margin: "14px 10px" }} /> <Link to='/information/addresses' >ĐỊA CHỈ CỦA TÔI</Link>
                                                     </li>
                                                     <li>
-                                                        <Link to='/information/changepass'>Đổi mật khẩu </Link>
+                                                        <ScheduleOutlined style={{ margin: "14px 10px" }} /><Link to='/information/orders'>ĐƠN HÀNG CỦA TÔI</Link>
                                                     </li>
                                                     <li>
-                                                        <a>Ví điện tử</a>
-                                                    </li>
-                                                    <li>
-                                                        <a>Liên kết tài khoản</a>
+                                                        <ReloadOutlined style={{ margin: "14px 10px" }} /> <Link to='/information/changepass'> ĐỔI MẬT KHẨU</Link>
                                                     </li>
                                                 </ul>
                                             </div>

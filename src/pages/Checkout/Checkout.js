@@ -149,7 +149,7 @@ function Checkout() {
                 <div className="sign-in-page" style={{ borderRadius: "10px", border: "NONE", marginTop: "10px" }}>
 
                     <>
-                        <legend ><h4 style={{ margin: "0 0 10px 0" }}>XÁC NHẬN THÔNG ĐƠN HÀNG</h4></legend>
+                        <legend ><h4 style={{ margin: "0 0 10px 0" }}>XÁC NHẬN THÔNG TIN ĐẶT HÀNG</h4></legend>
 
                         <div className="checkout-box ">
                             <div className="row">

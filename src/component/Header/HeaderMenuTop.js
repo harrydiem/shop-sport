@@ -47,7 +47,7 @@ function Header1() {
                                     </Link>
                             </li>
                             <li>
-                                <Link to="/checkout">
+                                <Link to="/orders">
                                     <i className="icon fa fa-check" />
                                         ĐƠN HÀNG
                                    </Link>

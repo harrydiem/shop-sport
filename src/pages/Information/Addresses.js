@@ -198,7 +198,14 @@ function Addresses() {
                                                 <div style={{ fontStyle: 'italic', display: 'contents' }}>{" ("}{index === 0 ? "Mặc định" : index}{")"}</div>
                                                         </label>
                                                     </div>
-                                                    {(index === 0) ? ""
+                                                    {(index === 0) ?
+                                                        <>
+                                                            <div className='col-md-4' style={{ padding: 0 }}></div>
+                                                            <div className='col-md-2' style={{ padding: 0 }}>
+                                                                <Button htmlType='submit' type='primary' style={{ marginLeft: "35px" }}>Cập nhật</Button>
+                                                            </div>
+
+                                                        </>
                                                         : <><div className='col-md-3' style={{ padding: 0 }}>
                                                             <Button icon={<EditFilled />} type="link" onClick={() => setDefaultAddress(e.id)}>
                                                                 Đặt làm mặc định

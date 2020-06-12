@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Input, Form, Button, message, Select } from 'antd'
 import { fetchLoading } from '../../common/utils/effect'
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, SolutionOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 
@@ -20,10 +20,7 @@ function Information() {
                 let result = await fetchLoading({
                     url: `http://localhost:5000/api/Users/${localStorage.id}/getaddresses`,
                     method: 'GET',
-                    // headers: { Authorization: 'Bearer ' + localStorage.token }
                 })
-                // 400 bad request => Chua co 
-                // console.log(result)
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     console.log("Co Dia chi :", result.data)
@@ -54,9 +51,7 @@ function Information() {
     }
     return (
         <div className="panel-group checkout-steps" id="accordion">
-            {/* checkout-step-01  */}
             <div className="panel panel-default checkout-step-01">
-                {/* panel-heading */}
                 <div className="panel-heading">
                     <h4 className="unicase-checkout-title">
                         <a
@@ -65,8 +60,7 @@ function Information() {
                                 marginRight: " 10px",
                                 padding: "15px 20px"
                             }}
-                        >
-                            Thông tin tài khoản
+                        > Thông tin tài khoản
                                              </a>
                     </h4>
                 </div>
@@ -89,6 +83,7 @@ function Information() {
                                         initialValue={localStorage.getItem('email')}
                                     >
                                         <Input
+                                            addonBefore={<MailOutlined />}
                                             disabled
                                         ></Input>
                                     </Form.Item>
@@ -106,7 +101,7 @@ function Information() {
                                         initialValue={localStorage.name}
                                     >
                                         <Input
-
+                                            addonBefore={<SolutionOutlined />}
 
                                         ></Input>
                                     </Form.Item>
@@ -119,11 +114,14 @@ function Information() {
                                     <Form.Item
                                         name='phone'
                                         className='col-md-6'
-                                        style={{ marginBottom: "20px" }}
+                                        style={{
+                                            marginBottom: "20px",
+                                        }}
                                         initialValue={localStorage.phoneNumber}
                                     >
                                         <Input
 
+                                            addonBefore={<PhoneOutlined />}
                                         ></Input>
                                     </Form.Item>
                                 </div>
@@ -147,8 +145,8 @@ function Information() {
                                             <div
                                                 className='col-md-6'
                                                 style={{ marginBottom: "20px", fontSize: "15px" }}
-                                            >
-                                                {address.length > 0 ? address[0].deliveryAddress : ''}
+                                            >   <EnvironmentOutlined />
+                                                {address.length > 0 ? " " + address[0].deliveryAddress : ''}
                                             </div>
                                             <div className='col-md-4'>
                                                 <Link to='/information/addresses'>
