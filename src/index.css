@@ -173,6 +173,27 @@ legend {
   background-color: #edefef;
 }
 
-/* .menuinfo > span {
+.menuinfo > span {
   margin: 14px 10px;
+}
+
+.ant-menu-item {
+  padding-left: 15px !important;
+}
+.menuCategori .ant-menu-submenu {
+  padding-left: 0 !important;
+}
+
+/* .menuCategori {
+  border: none !important;
+}
+.menuCategori .ant-menu-submenu-title {
+  font-size: 15px;
+  font-weight: 450;
+}
+.menuCategori .ant-menu-submenu-title,
+.menuCategori .ant-menu-inline .ant-menu-item:not(:last-child),
+.ant-menu-vertical .ant-menu-item:not(:last-child),
+.ant-menu-vertical .ant-menu-item {
+  margin: 0 !important;
 } */

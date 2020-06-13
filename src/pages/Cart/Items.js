@@ -94,6 +94,7 @@ function Items(props) {
   }
 
   function deleteItemClient(productId, quantity, price, index) {
+
     console.log("Xóa productID , Index :", productId, index)
     let update = cartList
     update.cartItemsDTO.splice(index, 1)

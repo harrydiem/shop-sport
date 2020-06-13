@@ -59,7 +59,7 @@ function Addresses() {
                     </Form.Item>
                     <Form.Item
                         name="wardsCreate"
-                        label="Xã/Phường"
+                        label="Phường/Xã"
                         rules={[
                             {
                                 required: true,

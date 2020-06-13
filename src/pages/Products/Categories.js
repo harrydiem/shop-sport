@@ -1,131 +1,97 @@
-import React from 'react'
-import { Slider } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Slider, message, Menu } from 'antd'
+import { fetchLoading } from '../../common/utils/effect';
+import { UnorderedListOutlined, HomeOutlined } from '@ant-design/icons';
 
-export default function Categories() {
+function Categories() {
+  const { SubMenu } = Menu
+  const [categories, setCategories] = useState()
+  // console.log("Categories -> categories", categories)
+  // const [listCategories, setListCategories] = useState([])
+  console.log("Categories -> categories", categories)
 
   function onChange(value) {
     console.log('onChange: ', value);
   }
+  const handleClick = e => {
+    console.log('click ', e);
+  }
+
+  async function getAllCategories() {
+    try {
+      let result = await fetchLoading({
+        url: 'http://localhost:5000/api/Categories/GetAllCategories',
+        method: 'GET',
+      })
+      setCategories(result.data.data)
+    } catch (error) {
+      console.log(error)
+      message.error("Lỗi kết nối đến Server")
+    }
+  }
+
+  useEffect(() => {
+    getAllCategories()
+  }, [])
+
+
   return (
     <div className="col-md-3 sidebar">
       <div className="sidebar-module-container">
         <div className="sidebar-filter">
           {/* ============================================== SIDEBAR CATEGORY ============================================== */}
           <div className="sidebar-widget wow fadeInUp round-top animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
-            <h3 className="section-title">Sắp xếp</h3>
-            <div className="widget-header">
-              <h4 className="widget-title">Danh mục</h4>
-            </div>
+            <h3 className="section-title">Danh Mục</h3>
             <div className="sidebar-widget-body">
+              <hr></hr>
               <div className="accordion">
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseOne" data-toggle="collapse" className="accordion-toggle collapsed"> Camera </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseOne" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseTwo" data-toggle="collapse" className="accordion-toggle collapsed"> Desktops </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseTwo" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseThree" data-toggle="collapse" className="accordion-toggle collapsed"> Pants </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseThree" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseFour" data-toggle="collapse" className="accordion-toggle collapsed"> Bags </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseFour" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseFive" data-toggle="collapse" className="accordion-toggle collapsed"> Hats </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseFive" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
-                <div className="accordion-group">
-                  <div className="accordion-heading"> <a href="#collapseSix" data-toggle="collapse" className="accordion-toggle collapsed"> Accessories </a> </div>
-                  {/* /.accordion-heading */}
-                  <div className="accordion-body collapse" id="collapseSix" style={{ height: '0px' }}>
-                    <div className="accordion-inner">
-                      <ul>
-                        <li><a href=" ">gaming</a></li>
-                        <li><a href=" ">office</a></li>
-                        <li><a href=" ">kids</a></li>
-                        <li><a href=" ">for women</a></li>
-                      </ul>
-                    </div>
-                    {/* /.accordion-inner */}
-                  </div>
-                  {/* /.accordion-body */}
-                </div>
-                {/* /.accordion-group */}
+                <Menu
+                  onClick={handleClick}
+                  style={{ width: "100%" }}
+                  defaultSelectedKeys={['0']}
+                  // defaultOpenKeys={['sub1']}
+                  mode="inline"
+                  className="menuCategori"
+                >
+                  <Menu.Item key="0" icon={<HomeOutlined />} style={{ paddingLeft: 0 }} >
+                    Tất cả sản phẩm
+                  </Menu.Item>
+
+                  {(categories)
+                    ? categories.map((c, index) => {
+                      return (
+                        <SubMenu
+                          mode="vertical"
+                          key={c.categoryDTO.id}
+                          icon={<UnorderedListOutlined />}
+                          title={
+                            <span>
+                              <span>{c.categoryDTO.name}</span>
+                            </span>
+                          }
+                        >
+                          <Menu.Item key={c.categoryDTO.id}>Tất cả</Menu.Item>
+                          {
+                            c.categoriesDTO
+                              ?
+                              (c.categoriesDTO.length > 0)
+                                ? c.categoriesDTO.map((option, index) => {
+                                  return (
+                                    <Menu.Item key={option.id}>{option.name}</Menu.Item>
+                                  )
+                                })
+                                : "" //Ko có danh mục con
+                              : ""
+                          }
+                        </SubMenu>
+                      )
+                    })
+                    : ""
+                  }
+                </Menu>
               </div>
-              {/* /.accordion */}
             </div>
-            {/* /.sidebar-widget-body */}
           </div>
-          {/* /.sidebar-widget */}
           {/* ============================================== SIDEBAR CATEGORY : END ============================================== */}
           {/* ============================================== PRICE SILDER============================================== */}
 
@@ -204,3 +170,4 @@ export default function Categories() {
   )
 
 }
+export default Categories

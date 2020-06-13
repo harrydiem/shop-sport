@@ -56,6 +56,14 @@ function Checkout() {
                         addressId: dataCheckout.addressId
                     }
                 })
+
+                //result.data.CLIENT_SECRET
+                // const result = await stripe.confirmCardPayment('{result.data.CLIENT_SECRET}', {
+                //     payment_method: {
+                //       card: elements.getElement(CardElement),
+                //     }
+                //   });
+                //
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     message.success('Thanh Toán Thành Công')
