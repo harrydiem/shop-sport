@@ -16,7 +16,6 @@ function Cart(props) {
     console.log("Cart -> cartList", cartList)
     const dispatch = useDispatch()
     const user = useSelector(state => state[MODULE_USER].user)
-    // console.log(user)
 
     function clickCheckout() {
         history.push("/checkout")
@@ -32,14 +31,10 @@ function Cart(props) {
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     dispatch(actionCarts.FETCH_CART(result.data.data))
-                    // (result.data.data.cartItemsDTO)
-                    // ? dispatch(actionCarts.COUNT_CART(result.data.data.cartItemsDTO.length))
-                    // : dispatch(actionCarts.COUNT_CART(0))
                 } else {
                     dispatch(actionCarts.FETCH_CART({}))
                     dispatch(actionCarts.COUNT_CART(0))
-                    console.log("Trống")
-                    //Gọi hàm return
+
                 }
             } catch (error) {
                 console.log(error)

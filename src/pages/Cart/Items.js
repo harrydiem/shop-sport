@@ -9,30 +9,20 @@ import { fetchLoading } from "../../common/utils/effect";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 function Items(props) {
   const { Option } = Select;
-  async function onChange(productId, quantity, index) {  //Quantity
-    console.log("Change , Index ,value:", productId, index, quantity)
+  async function onChange(productId, quantity, index) {  //Change Quantity
     if (localStorage.id) {
       let update = cartList
       let newUpdate = {
-        cartId: localStorage.id,
         productId: update.cartItemsDTO[index].productId,
         color: update.cartItemsDTO[index].color,
         size: update.cartItemsDTO[index].size,
-        quantity: quantity
-      }// Xóa giá trong tổng trước
-      console.log("object", newUpdate)
-
+        newQuantity: quantity
+      }
       try {
         let result = await fetchLoading({
-          url: "http://localhost:5000/api/Carts",
-          method: "POST",
-          data: {
-            cartId: localStorage.id,
-            productId: update.cartItemsDTO[index].productId,
-            color: update.cartItemsDTO[index].color,
-            size: update.cartItemsDTO[index].size,
-            quantity: quantity
-          }
+          url: "http://localhost:5000/api/Carts/" + localStorage.id,
+          method: "PUT",
+          data: newUpdate
         });
         let statusProducts = result.status;
         if (statusProducts === 200) {
@@ -44,25 +34,25 @@ function Items(props) {
         console.log(error);
         message.error("Lỗi kết nối đến Server");
       }
-
-
-
       //dispatch(actionCarts.FETCH_CART(update))
     } else {
       let update = cartList
       update.totalPrice -= update.cartItemsDTO[index].price * update.cartItemsDTO[index].quantity // Xóa giá trong tổng trước
       update.cartItemsDTO[index].quantity = quantity
       update.totalPrice += update.cartItemsDTO[index].quantity * update.cartItemsDTO[index].price
-      console.log(update)
       dispatch(actionCarts.FETCH_CART(update))
       localStorage.setItem('dataCart', JSON.stringify(update))
       history.push("/cart") //Load lai cap nhat
     }
   }
+
+
+
+
   const history = useHistory()
   const cartList = useSelector((state) => state[MODULE_CART].carts);
   const dispatch = useDispatch()
-  function deleteItem(id, color, size, index) {
+  function deleteItem(id, color, size, index) {//Delete
     Modal.confirm({
       title: "Xóa sản phẩm khỏi giỏ hàng ?",
       icon: <ExclamationCircleOutlined />,
@@ -94,14 +84,11 @@ function Items(props) {
   }
 
   function deleteItemClient(productId, quantity, price, index) {
-
     console.log("Xóa productID , Index :", productId, index)
     let update = cartList
     update.cartItemsDTO.splice(index, 1)
     update.countCart = update.cartItemsDTO.length
     update.totalPrice -= quantity * price
-    console.log(update)
-
     if (update.cartItemsDTO.length === 0) {
       dispatch(actionCarts.FETCH_CART({}))
       localStorage.removeItem('dataCart')
@@ -137,7 +124,7 @@ function Items(props) {
               </a>
             </td>
             <td className="cart-image">
-              <a className="entry-thumbnail" href="/detail">
+              <a className="entry-thumbnail" href={"/detail/" + item.productId}>
                 <img
                   src={"http://localhost:5000" + item.productImageDTO.url}
                   alt={item.productName}

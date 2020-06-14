@@ -2,19 +2,79 @@ import React, { useEffect, useState } from 'react'
 import { Slider, message, Menu } from 'antd'
 import { fetchLoading } from '../../common/utils/effect';
 import { UnorderedListOutlined, HomeOutlined } from '@ant-design/icons';
+import { MODULE_NAME as MODULE_PRODUCTS } from '../../constain/productsConstain'
+import { useSelector, useDispatch } from 'react-redux';
+import * as actionProducts from '../../actions/actionProducts'
 
 function Categories() {
   const { SubMenu } = Menu
+  const dispatch = useDispatch()
   const [categories, setCategories] = useState()
-  // console.log("Categories -> categories", categories)
-  // const [listCategories, setListCategories] = useState([])
-  console.log("Categories -> categories", categories)
+  const page = useSelector(state => state[MODULE_PRODUCTS].pages)
 
-  function onChange(value) {
-    console.log('onChange: ', value);
+  const onChange = e => {
+    console.log('Change price', e);
   }
-  const handleClick = e => {
-    console.log('click ', e);
+  async function handleClick(value) {
+    // console.log("value: ", value)
+    let dataLoad = {
+      categoryId: value.key === '' || value.key === "0" ? "" : value.key, // 
+      Keyword: '',
+      MinPrice: '',
+      PageIndex: 1,
+      PageSize: 9,
+      MaxPrice: '',
+      Color: '',
+      SortBy: '',
+      Order: ''
+    }
+    dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: value.key }))//{ ...page, dataLoad: 2 }
+    if (value.key === '' || value.key === "0") {//All
+      //  await getProducts()
+      dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: '' }))
+    } else
+      // await getProductsByCategori(value.key)
+      dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: value.key }))
+
+  }
+
+  async function getProductsByCategori(categoryId) {
+    try {
+      let result = await fetchLoading({
+        url: `http://localhost:5000/api/Categories/${categoryId}/products`,
+        method: 'GET',
+        params: page //store pages:{Keyword: "", PageIndex: 1, PageSize: 12 } default   
+      })
+      let statusProducts = result.status
+      if (statusProducts === 200) {
+        dispatch(actionProducts.FETCH_PRODUCTS(result.data.data))
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      message.error("Lỗi kết nối đến Server")
+    }
+  }
+
+
+  async function getProducts() {
+    try {
+      let result = await fetchLoading({
+        url: 'http://localhost:5000/api/products',
+        method: 'GET',
+        params: page//store pages:{Keyword: "", PageIndex: 1, PageSize: 12 } default   
+      })
+      let statusProducts = result.status
+      if (statusProducts === 200) {
+        dispatch(actionProducts.FETCH_PRODUCTS(result.data.data))
+      } else {
+        console.log(result.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      message.error("Lỗi kết nối đến Server")
+    }
   }
 
   async function getAllCategories() {
@@ -29,10 +89,14 @@ function Categories() {
       message.error("Lỗi kết nối đến Server")
     }
   }
-
   useEffect(() => {
     getAllCategories()
-  }, [])
+
+    if (page.categoryId === '' || page.categoryId === "0") {
+      getProducts()
+    } else
+      getProductsByCategori(page.categoryId)
+  }, [page])
 
 
   return (
@@ -41,7 +105,7 @@ function Categories() {
         <div className="sidebar-filter">
           {/* ============================================== SIDEBAR CATEGORY ============================================== */}
           <div className="sidebar-widget wow fadeInUp round-top animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
-            <h3 className="section-title">Danh Mục</h3>
+            <h3 className="section-title" style={{ paddingBottom: 0 }} >Danh Mục</h3>
             <div className="sidebar-widget-body">
               <hr></hr>
               <div className="accordion">
@@ -101,18 +165,31 @@ function Categories() {
               <h4 className="widget-title">Thanh Chỉnh Giá</h4>
             </div>
             <div className="sidebar-widget-body m-t-10">
-              <div className="price-range-holder"> <span className="min-max"> <span className="pull-left">0 VND</span> <span className="pull-right">5.000.000 VND</span> </span>
+              <div className="price-range-holder" style={{ marginBottom: "10px" }}> <span className="min-max"> <span className="pull-left">0 VND</span> <span className="pull-right">5.000.000 VND</span> </span>
                 {/* <input type="text" id="amount" style={{ border: 0, color: '#666666', fontWeight: 'bold', textAlign: 'center' }} />
                 <div className="slider slider-horizontal" ><div className="slider-track"><div className="slider-selection" style={{ left: '16.6667%', width: '50%' }} /><div className="slider-handle min-slider-handle" tabIndex={0} style={{ left: '16.6667%' }} /><div className="slider-handle max-slider-handle" tabIndex={0} style={{ left: '66.6667%' }} /></div><div className="tooltip tooltip-main top" style={{ left: '41.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">200 : 500</div></div><div className="tooltip tooltip-min top" style={{ left: '16.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">200</div></div><div className="tooltip tooltip-max bottom" style={{ top: '18px', left: '66.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">500</div></div></div><input type="text" className="price-slider" defaultValue="200,500" data="value: '200,500'" style={{ display: 'none' }} /> */}
               </div>
               {/* /.price-range-holder */}
-              <a href=" " className="lnk btn btn-primary">Show Now</a> </div>
+              <a href=" " className="lnk btn btn-primary" style={{ display: "block", width: "50%", margin: "auto" }}>HIỆN THỊ</a> </div>
             {/* /.sidebar-widget-body */}
           </div>
           {/* /.sidebar-widget */}
           {/* ============================================== PRICE SILDER : END ============================================== */}
+          {/* ============================================== PRODUCT TAGS ============================================== */}
+          <div className="sidebar-widget product-tag wow fadeInUp outer-top-vs animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
+            <h3 className="section-title">CHỌN MÀU</h3>
+            <div className="sidebar-widget-body outer-top-xs">
+              <div className="tag-list">
+                <a className="item" title="Phone" href="category.html">Hồng</a>
+                <a className="item active" title="Vest" href="category.html">Xanh</a>
+                <a className="item" title="Smartphone" href="category.html">Đen</a>
+                <a className="item" title="Furniture" href="category.html">Trắng</a>
+              </div>
+            </div>
+          </div>
+          {/* /.sidebar-widget */}
           {/* ============================================== MANUFACTURES============================================== */}
-          <div className="sidebar-widget wow fadeInUp no-round animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
+          {/* <div className="sidebar-widget wow fadeInUp no-round animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
             <div className="widget-header">
               <h4 className="widget-title">Manufactures</h4>
             </div>
@@ -125,14 +202,13 @@ function Categories() {
                 <li><a href=" ">Chanel</a></li>
                 <li><a href=" ">Other Brand</a></li>
               </ul>
-              {/*<a href=" " class="lnk btn btn-primary">Show Now</a>*/}
             </div>
-            {/* /.sidebar-widget-body */}
-          </div>
+          </div> */}
           {/* /.sidebar-widget */}
           {/* ============================================== MANUFACTURES: END ============================================== */}
+
           {/* ============================================== COLOR============================================== */}
-          <div className="sidebar-widget wow fadeInUp round-bottom animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
+          {/* <div className="sidebar-widget wow fadeInUp round-bottom animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
             <div className="widget-header">
               <h4 className="widget-title">Colors</h4>
             </div>
@@ -146,22 +222,12 @@ function Categories() {
                 <li><a href=" ">Teal</a></li>
               </ul>
             </div>
-            {/* /.sidebar-widget-body */}
           </div>
+          */}
           {/* /.sidebar-widget */}
           {/* ============================================== COLOR: END ============================================== */}
-          {/* ============================================== PRODUCT TAGS ============================================== */}
-          <div className="sidebar-widget product-tag wow fadeInUp outer-top-vs animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
-            <h3 className="section-title">Product tags</h3>
-            <div className="sidebar-widget-body outer-top-xs">
-              <div className="tag-list"> <a className="item" title="Phone" href="category.html">Phone</a> <a className="item active" title="Vest" href="category.html">Vest</a> <a className="item" title="Smartphone" href="category.html">Smartphone</a> <a className="item" title="Furniture" href="category.html">Furniture</a> <a className="item" title="T-shirt" href="category.html">T-shirt</a> <a className="item" title="Sweatpants" href="category.html">Sweatpants</a> <a className="item" title="Sneaker" href="category.html">Sneaker</a> <a className="item" title="Toys" href="category.html">Toys</a> <a className="item" title="Rose" href="category.html">Rose</a> </div>
-              {/* /.tag-list */}
-            </div>
-            {/* /.sidebar-widget-body */}
-          </div>
-          {/* /.sidebar-widget */}
-          {/*--------- Testimonials-----------*/}
-          <div className="home-banner"> <img src="../assets/images/banners/LHS-banner.jpg" alt="Imagse" /> </div>
+
+
         </div>
         {/* /.sidebar-filter */}
       </div>

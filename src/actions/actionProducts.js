@@ -13,5 +13,11 @@ export const PAGES_CHANGE = (page) => {
         payload: page,
     }
 }
+export const DATA_SEARCH = (data) => {
+    return {
+        type: productsConstain.DATA_SEARCH,
+        payload: data,
+    }
+}
 
 

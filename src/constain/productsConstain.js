@@ -1,4 +1,5 @@
 export const FETCH_PRODUCTS = 'FETCH_PRODUCTS'
 export const PAGES_CHANGE = 'PAGES_CHANGE'
+export const DATA_SEARCH = 'DATA_SEARCH'
 export const MODULE_NAME = 'PRODUCTS_MODEL'
 

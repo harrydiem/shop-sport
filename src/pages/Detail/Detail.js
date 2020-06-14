@@ -12,21 +12,28 @@ function Detail(props) {
     // const countCart = useSelector(state => state[MODULE_CART].countCart)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
+    console.log("Detail -> state", state)
     const [image, setimage] = useState({ name: '', url: '' })
     const [form] = Form.useForm()
     const { Option } = Select;
 
     async function onFinish(values) {
+        console.log(values)
         let GetQuantity = values.quantity + 1 //Khai báo mặc định là luôn lớn hơn số lượng đã chọn
+        let paramss = values.selectColor === ""
+            ? {
+                productId: props.match.params.id,
+                Size: "" + values.selectSize,
+            } : {
+                productId: props.match.params.id,
+                Color: values.selectColor,
+                Size: "" + values.selectSize,
+            }
         try {
             let result = await fetchLoading({
                 url: `http://localhost:5000/api/Products/${props.match.params.id}/GetQuantity`,
                 method: 'GET',
-                params: {
-                    productId: props.match.params.id,
-                    Color: "" + values.selectColor,
-                    Size: "" + values.selectSize,
-                }
+                params: paramss
             })
             let statusProducts = result.status
             GetQuantity = result.data.data// Gán = Số lượng sp theo Size trả về
@@ -43,19 +50,17 @@ function Detail(props) {
             message.warning(`Sản phầm màu :${values.selectColor} size: ${values.selectSize} không đủ số lượng !`)
         }
         else { //Số lượng có đủ
-            let countItemInCart = 0
+            let countItemInCart = 0 //tăng tạm 
             if (cartList) {
                 if (cartList.cartItemsDTO) {
                     for (var i = 0; i < cartList.cartItemsDTO.length; i++) {
                         if (parseInt(cartList.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && cartList.cartItemsDTO[i].color === values.selectColor && cartList.cartItemsDTO[i].size === values.selectSize)//Trung SP , Tang Num                                                 
-                            countItemInCart = cartList.cartItemsDTO[i].quantity + parseInt(values.quantity) //     numcheck=numcart+ numadd   
+                            countItemInCart = cartList.cartItemsDTO[i].quantity + parseInt(values.quantity) //     numcheck=numcart+ numadd  
+                        console.log(cartList.cartItemsDTO[i].quantity, parseInt(values.quantity), countItemInCart)
                         break
-
                     }
                 }
             }
-
-
             if (countItemInCart > 5) {
                 message.warning('Số lượng mỗi sản phẩm trong giỏ hàng không vượt quá 5 sản phẩm')
             } else { //đủ số lượng và ko > 5
@@ -68,7 +73,7 @@ function Detail(props) {
                             data: {
                                 cartId: localStorage.id,
                                 productId: props.match.params.id,
-                                color: "" + values.selectColor,
+                                color: values.selectColor ? "" + values.selectColor : "",
                                 size: "" + values.selectSize,
                                 quantity: values.quantity
                             }
@@ -93,15 +98,12 @@ function Detail(props) {
                         var checkPoint = false
                         for (var i = 0; i < updateCart.cartItemsDTO.length; i++) {
                             if (parseInt(updateCart.cartItemsDTO[i].productId) === parseInt(props.match.params.id) && updateCart.cartItemsDTO[i].color === values.selectColor && updateCart.cartItemsDTO[i].size === values.selectSize) {//Trung SP , Tang Num                                                 
-
                                 updateCart.totalPrice += parseInt(state.currentPrice) * parseInt(values.quantity) //Price += Price * numAdd
                                 updateCart.cartItemsDTO[i].quantity += parseInt(values.quantity) //     num+=numadd
                                 checkPoint = true
                                 break
                             }
-                            else {
-                                checkPoint = false
-                            }
+
                         }
                         if (!checkPoint) { //ko tìm thấy thì thêm mới
                             updateCart.countCart += 1
@@ -133,7 +135,7 @@ function Detail(props) {
                                     productId: parseInt(props.match.params.id),
                                     productName: state.name,
                                     size: values.selectSize,
-                                    color: values.selectColor,
+                                    color: values.selectColor ? "" + values.selectColor : "",
                                     price: state.currentPrice,
                                     quantity: values.quantity,
                                     productImageDTO: {
@@ -211,13 +213,13 @@ function Detail(props) {
                 method: 'GET',
                 params: {
                     productId: props.match.params.id,
-                    Color: color
+                    Color: color ? color : ""
                 }
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
+                console.log(result.data.data)
                 form.setFieldsValue({ selectSize: result.data.data[0] }) //
-
             } else {
                 message.error("Đã có lỗi xảy ra !")
             }
@@ -235,6 +237,7 @@ function Detail(props) {
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
+
                 setstate(result.data.data)
                 // setimage({
                 //     name: result.data.data.productImages[0].name,
@@ -242,9 +245,12 @@ function Detail(props) {
                 // })
                 form.setFieldsValue({ selectColor: result.data.data.colors[0].color })
                 // form.setFieldsValue({ selectSize: result.data.data.sizes[0] }) //
-                await getSize(result.data.data.colors[0].color)
-                await getImageByColor(result.data.data.colors[0].id)
-
+                if (result.data.data.colors[0].color !== '') {
+                    console.log("La quan ao")
+                    await getSize(result.data.data.colors[0].color)
+                    await getImageByColor(result.data.data.colors[0].id)
+                } else
+                    form.setFieldsValue({ selectSize: result.data.data.sizes[0] })
             } else {
                 message.error("Đã có lỗi xảy ra !")
             }

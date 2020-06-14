@@ -2,7 +2,30 @@ import * as productsConstain from '../constain/productsConstain'
 
 const initialState = {
     products: {},
-    pages: { Keyword: "", PageIndex: 1, PageSize: 9 },//{ Keyword: {search}, PageIndex: 1, PageSize: 12 }
+    pages: {
+        categoryId: '',
+        Keyword: '',
+        PageIndex: 1,
+        PageSize: 9,
+        MinPrice: '',
+        MaxPrice: '',
+        Color: '',
+        SortBy: '',
+        Order: ''
+    },
+    // { Keyword: "", PageIndex: 1, PageSize: 9 },
+    //{ Keyword: {search}, PageIndex: 1, PageSize: 12 }
+    dataLoad: {
+        categoryId: '',
+        Keyword: '',
+        PageIndex: 1,
+        PageSize: 9,
+        MinPrice: '',
+        MaxPrice: '',
+        Color: '',
+        SortBy: '',
+        Order: ''
+    },
 }
 
 function listProduct(state = initialState, action) {
@@ -16,6 +39,11 @@ function listProduct(state = initialState, action) {
             return {
                 ...state,
                 pages: action.payload
+            }
+        case productsConstain.DATA_SEARCH:
+            return {
+                ...state,
+                dataLoad: action.payload
             }
         default:
             return state

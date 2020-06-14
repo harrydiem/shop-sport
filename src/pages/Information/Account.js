@@ -151,7 +151,7 @@ function Information() {
                                             <div className='col-md-4'>
                                                 <Link to='/information/addresses'>
                                                     <EditOutlined />
-                                                      Thay đổi địa chỉ mặc định
+                                                      Địa chỉ mặc định
                                                 </Link>
                                             </div>
                                         </div>

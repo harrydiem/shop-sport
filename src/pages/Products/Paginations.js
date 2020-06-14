@@ -13,7 +13,7 @@ function Paginations() {
                 ? (<Pagination size="small" total={listProducts.totalItem}
                     pageSize={pages_change.PageSize}
                     current={pages_change.PageIndex}
-                    onChange={(page, pageSize) => { dispatch(actionProducts.PAGES_CHANGE({ ...pages_change, PageIndex: page })) }}
+                    onChange={(page, pageSize) => { dispatch(actionProducts.PAGES_CHANGE({ ...pages_change, PageIndex: page, PageSize: pageSize })) }}
                 />)
                 : (<></>)}
         </div>
