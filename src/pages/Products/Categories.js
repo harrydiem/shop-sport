@@ -183,7 +183,7 @@ function Categories() {
               <a className="lnk btn btn-primary"
                 onClick={() => showByPrice()}
                 style={{ display: "block", width: "50%", margin: "auto" }}>
-                HIỆN THỊ
+                HIỂN THỊ
                 </a>
             </div>
             {/* /.sidebar-widget-body */}

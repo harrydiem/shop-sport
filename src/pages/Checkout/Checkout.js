@@ -8,6 +8,8 @@ import { fetchLoading } from '../../common/utils/effect';
 import { useHistory } from 'react-router-dom';
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 import { useSelector, useDispatch } from 'react-redux';
+import { PlusOutlined } from '@ant-design/icons';
+import formatNumber from '../../common/utils/formatNumber';
 
 const { Option } = Select
 
@@ -21,6 +23,8 @@ function Checkout() {
     const [address, setAddress] = useState([])
     const dispatch = useDispatch()
     const dataCheckout = useSelector(state => state[MODULE_CART].checkout)
+    const cartsList = useSelector(state => state[MODULE_CART].carts)
+    // console.log("Checkout -> cartsList", cartsList)
 
     console.log("Checkout -> dataCheckout", dataCheckout)
     //Step 1 
@@ -39,47 +43,50 @@ function Checkout() {
         setValueRadio(e.target.value);
         // if (e.target.value === 2) {
         //     e.target.value === 2 ? setStripe(true) : ''
-        // }
+        // }o
     };
 
     async function ClickCheckOut() {
-        if (valueRadio === 1) {
-            try {
-                let result = await fetchLoading({
-                    url: `http://localhost:5000/api/Orders`,
-                    method: 'POST',
-                    data: {
-                        paymentMethod: "Thanh toán khi nhận hàng",
-                        shipName: "Giao hàng tiết kiệm",
-                        shipPrice: 10000,
-                        userId: localStorage.id,
-                        addressId: dataCheckout.addressId
+        if (dataCheckout.addressId === 0) {
+            message.warning('Vui lòng thêm địa chỉ')
+        } else
+            if (valueRadio === 1) {
+                try {
+                    let result = await fetchLoading({
+                        url: `http://localhost:5000/api/Orders`,
+                        method: 'POST',
+                        data: {
+                            paymentMethod: "Thanh toán khi nhận hàng",
+                            shipName: "Giao hàng tiết kiệm",
+                            shipPrice: 10000,
+                            userId: localStorage.id,
+                            addressId: dataCheckout.addressId
+                        }
+                    })
+
+                    //result.data.CLIENT_SECRET
+                    // const result = await stripe.confirmCardPayment('{result.data.CLIENT_SECRET}', {
+                    //     payment_method: {
+                    //       card: elements.getElement(CardElement),
+                    //     }
+                    //   });
+                    //
+
+                    let statusProducts = result.status
+                    if (statusProducts === 200) {
+                        message.success('Thanh Toán Thành Công')
+                        localStorage.setItem('dataCart', JSON.stringify({ countCart: 0 }))
+                        dispatch(actionCarts.COUNT_CART(0))
+                        history.push('/information/orders')
                     }
-                })
-
-                //result.data.CLIENT_SECRET
-                // const result = await stripe.confirmCardPayment('{result.data.CLIENT_SECRET}', {
-                //     payment_method: {
-                //       card: elements.getElement(CardElement),
-                //     }
-                //   });
-                //
-
-                let statusProducts = result.status
-                if (statusProducts === 200) {
-                    message.success('Thanh Toán Thành Công')
-                    localStorage.setItem('dataCart', JSON.stringify({ countCart: 0 }))
-                    dispatch(actionCarts.COUNT_CART(0))
-                    history.push('/information/orders')
+                } catch (error) {
+                    console.log(error)
+                    message.error("Lỗi kết nối đến Server")
                 }
-            } catch (error) {
-                console.log(error)
-                message.error("Lỗi kết nối đến Server")
             }
-        }
-        else {
-            message.success("Stripe")
-        }
+            else {
+                message.success("Stripe")
+            }
 
 
     }
@@ -238,11 +245,13 @@ function Checkout() {
                                                             </Form.Item>
                                                         </div>
 
+
                                                         <Form.Item
                                                             label="Chọn Địa Chỉ"
                                                             name="selectAddress"
                                                             id="selectAddress"
                                                         >
+
 
                                                             <Select
                                                                 size="large"
@@ -271,6 +280,10 @@ function Checkout() {
 
                                                         </Form.Item>
 
+
+
+
+
                                                         <Radio.Group onChange={(e) => onChangeRadio(e)} value={valueRadio}>
                                                             <Radio style={radioStyle} value={1}>
                                                                 Thanh toán khi giao hàng
@@ -295,7 +308,6 @@ function Checkout() {
 
                                                     </Form>
 
-
                                                 </div>
                                             </div>
                                         </div>
@@ -315,7 +327,7 @@ function Checkout() {
 
                                                         </div>
                                                         <div className="cart-grand-total">
-                                                            Giá Trị Đơn Hàng: <span className="inner-left-md">800.000 VNĐ</span>
+                                                            Giá Trị Đơn Hàng: <span className="inner-left-md">{cartsList ? formatNumber(cartsList.totalPrice, ".", ".") : ""}</span>
                                                         </div>
                                                     </th>
                                                 </tr>

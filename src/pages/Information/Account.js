@@ -9,8 +9,51 @@ function Information() {
     const [address, setAddress] = useState([])
     const { Option } = Select
     const [form] = Form.useForm()
-    const onFinish = (value) => {
-        console.log("update")
+
+    const onFinish = async (value) => {
+        console.log(value)
+
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/${localStorage.id}/Update`,
+                method: 'PUT',
+                data: {
+                    userId: localStorage.id,
+                    name: value.firstname,
+                    phoneNumber: value.phone,
+                }
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                // console.log(result.data)
+                localStorage.setItem("name", value.firstName)
+                localStorage.setItem("phoneNumber", value.phone)
+                message.success("Thông tin đã được cập nhật !")
+                // form.setFieldsValue({ firstname: result.data.data.firstName })
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+    }
+
+    async function getUser() {
+
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/${localStorage.id}`,
+                method: 'GET',
+                params: { userId: localStorage.id }
+            })
+            let statusProducts = result.status
+            if (statusProducts === 200) {
+                console.log(result.data)
+                form.setFieldsValue({ firstname: result.data.data.firstName, email: result.data.data.email, phone: result.data.data.phoneNumber })
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
     }
 
     useEffect(() => {
@@ -32,6 +75,7 @@ function Information() {
                 message.error("Lỗi kết nối đến Server")
             }
         }
+        getUser()
         getAddress()
     }, [])
     function onChange(value) {
@@ -80,7 +124,7 @@ function Information() {
                                         name='email'
                                         className='col-md-6'
                                         style={{ margin: "0 0 20px 0" }}
-                                        initialValue={localStorage.getItem('email')}
+                                    // initialValue={localStorage.getItem('email')}
                                     >
                                         <Input
                                             addonBefore={<MailOutlined />}
@@ -95,10 +139,10 @@ function Information() {
                                 <div className='formControl'>
                                     <label className='input-label col-md-2'>Tên: </label>
                                     <Form.Item
-                                        name='name'
+                                        name='firstname'
                                         className='col-md-6'
                                         style={{ margin: "0 0 20px 0" }}
-                                        initialValue={localStorage.name}
+
                                     >
                                         <Input
                                             addonBefore={<SolutionOutlined />}
@@ -117,7 +161,7 @@ function Information() {
                                         style={{
                                             marginBottom: "20px",
                                         }}
-                                        initialValue={localStorage.phoneNumber}
+                                    // initialValue={localStorage.phoneNumber}
                                     >
                                         <Input
 

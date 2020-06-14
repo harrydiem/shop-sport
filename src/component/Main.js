@@ -10,15 +10,14 @@ export class Main extends Component {
     render() {
         return (
             <>
-            <Header/>
-            {/* <MainContent/> */}
-            <div className="body-content outer-top-vs" id="top-banner-and-menu">                                
+                <Header />
+                {/* <MainContent/> */}
+                <div className="body-content outer-top-vs" id="top-banner-and-menu">
                     {this.props.children}
-                                   
-                {/* Hết Conttent */}
-            </div>
-            
-            <Footer/>
+                    {/* Hết Conttent */}
+                </div>
+
+                <Footer />
             </>
         )
     }

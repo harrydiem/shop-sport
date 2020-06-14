@@ -17,7 +17,7 @@ function Login() {
     setIsLoading(true) //button Loading....
     const newUser = {
       email: formValue.emailCreate,
-      firstName: "H ",
+      firstName: formValue.name,
       lastName: formValue.name,
       dateOfBirth: "1999-01-01",
       phoneNumber: formValue.phone,
@@ -64,7 +64,7 @@ function Login() {
         console.log(result.data)
         var loginLocal = {
           id: result.data.data.id,
-          name: result.data.data.lastName,
+          name: result.data.data.firstName,
           email: result.data.data.email,
           phoneNumber: result.data.data.phoneNumber,
           token: result.data.data.token,
