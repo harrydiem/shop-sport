@@ -5,15 +5,21 @@ import { UnorderedListOutlined, HomeOutlined } from '@ant-design/icons';
 import { MODULE_NAME as MODULE_PRODUCTS } from '../../constain/productsConstain'
 import { useSelector, useDispatch } from 'react-redux';
 import * as actionProducts from '../../actions/actionProducts'
+import formatNumber from '../../common/utils/formatNumber';
 
 function Categories() {
   const { SubMenu } = Menu
   const dispatch = useDispatch()
+  const [priceSlider, setpriceSlider] = useState({ MinPrice: 30000, MaxPrice: 3000000 })
   const [categories, setCategories] = useState()
   const page = useSelector(state => state[MODULE_PRODUCTS].pages)
-
   const onChange = e => {
-    console.log('Change price', e);
+    // console.log('Change price', e);
+    setpriceSlider({ MinPrice: e[0] * 3000000 / 100, MaxPrice: e[1] * 3000000 / 100 })
+  }
+  const showByPrice = () => {
+    console.log("Categories -> priceSlider", priceSlider)
+    dispatch(actionProducts.PAGES_CHANGE({ ...page, MinPrice: priceSlider.MinPrice, MaxPrice: priceSlider.MaxPrice }))
   }
   async function handleClick(value) {
     // console.log("value: ", value)
@@ -35,7 +41,6 @@ function Categories() {
     } else
       // await getProductsByCategori(value.key)
       dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: value.key }))
-
   }
 
   async function getProductsByCategori(categoryId) {
@@ -160,17 +165,29 @@ function Categories() {
           {/* ============================================== PRICE SILDER============================================== */}
 
           <div className="sidebar-widget wow fadeInUp no-round animated" style={{ visibility: 'visible', animationName: 'fadeInUp' }}>
-            <Slider range defaultValue={[20, 50]} onChange={onChange} />
+            <Slider range defaultValue={[0, 100]} onChange={onChange} min={1} />
             <div className="widget-header">
               <h4 className="widget-title">Thanh Chỉnh Giá</h4>
             </div>
             <div className="sidebar-widget-body m-t-10">
-              <div className="price-range-holder" style={{ marginBottom: "10px" }}> <span className="min-max"> <span className="pull-left">0 VND</span> <span className="pull-right">5.000.000 VND</span> </span>
-                {/* <input type="text" id="amount" style={{ border: 0, color: '#666666', fontWeight: 'bold', textAlign: 'center' }} />
-                <div className="slider slider-horizontal" ><div className="slider-track"><div className="slider-selection" style={{ left: '16.6667%', width: '50%' }} /><div className="slider-handle min-slider-handle" tabIndex={0} style={{ left: '16.6667%' }} /><div className="slider-handle max-slider-handle" tabIndex={0} style={{ left: '66.6667%' }} /></div><div className="tooltip tooltip-main top" style={{ left: '41.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">200 : 500</div></div><div className="tooltip tooltip-min top" style={{ left: '16.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">200</div></div><div className="tooltip tooltip-max bottom" style={{ top: '18px', left: '66.6667%', marginLeft: '-35px' }}><div className="tooltip-arrow" /><div className="tooltip-inner">500</div></div></div><input type="text" className="price-slider" defaultValue="200,500" data="value: '200,500'" style={{ display: 'none' }} /> */}
+              <div className="price-range-holder" style={{ marginBottom: "10px" }}> <span className="min-max">
+                {priceSlider
+                  ? (<>
+                    <span className="pull-left">{formatNumber(priceSlider.MinPrice, '.', '.')} đ</span>
+                    <span className="pull-right">{formatNumber(priceSlider.MaxPrice, '.', '.')} đ</span>
+                  </>)
+                  : ""
+                }
+
+              </span>
               </div>
               {/* /.price-range-holder */}
-              <a href=" " className="lnk btn btn-primary" style={{ display: "block", width: "50%", margin: "auto" }}>HIỆN THỊ</a> </div>
+              <a className="lnk btn btn-primary"
+                onClick={() => showByPrice()}
+                style={{ display: "block", width: "50%", margin: "auto" }}>
+                HIỆN THỊ
+                </a>
+            </div>
             {/* /.sidebar-widget-body */}
           </div>
           {/* /.sidebar-widget */}

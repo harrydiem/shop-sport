@@ -64,6 +64,7 @@ function Checkout() {
                 //     }
                 //   });
                 //
+
                 let statusProducts = result.status
                 if (statusProducts === 200) {
                     message.success('Thanh Toán Thành Công')

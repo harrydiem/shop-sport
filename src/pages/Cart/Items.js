@@ -45,10 +45,6 @@ function Items(props) {
       history.push("/cart") //Load lai cap nhat
     }
   }
-
-
-
-
   const history = useHistory()
   const cartList = useSelector((state) => state[MODULE_CART].carts);
   const dispatch = useDispatch()

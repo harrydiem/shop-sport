@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Input, Form, Button, message, Modal } from 'antd'
 import { DeleteFilled, EditFilled, FileAddOutlined } from '@ant-design/icons';
 import { fetchLoading } from '../../common/utils/effect'
+import { useHistory } from 'react-router-dom';
 function Addresses() {
     const [address, setAddress] = useState([])
     const [visible, setVisible] = useState(false);
+    const history = useHistory()
     const CreateAddress = ({ visible, onCreate, onCancel }) => {
         return (
             <Modal
@@ -106,10 +108,25 @@ function Addresses() {
 
 
     const [form] = Form.useForm()
-    const onFinish = (value) => {
+    const onFinish = async (value) => {
         console.log("Cap nhat ", value)
-        // for (var i = 0; i < address.length; i++) {
-        // }
+        let updateAddress = "" + value.city + "-" + value.district + "-" + value.wards + "-" + value.address
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/addresses/${value.idAddess}`,
+                method: 'PUT',
+                data: {
+                    deliveryAddress: updateAddress
+                }
+            })
+
+            if (result.status === 200) {
+                message.success('Câp nhật thành công !')
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
     }
     // const onFormFinish = (name) => {
     //     console.log("name form", name)
@@ -117,11 +134,47 @@ function Addresses() {
     function cutAddress(address) {
         return address.split("-")
     }
-    function setDefaultAddress(id) {
-        console.log(id)
+    async function setDefaultAddress(id) {
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/${localStorage.id}/addresses/${id}/SetDefault`,
+                method: 'PUT',
+                data: {
+                    userId: localStorage.id,
+                    addressId: id
+                }
+            })
+
+            if (result.status === 200) {
+                message.success('Câp nhật thành công !')
+                history.push("/information/account")
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+
     }
-    function deleteAddress(id) {
-        console.log(id)
+    async function deleteAddress(id) {
+        try {
+            let result = await fetchLoading({
+                url: `http://localhost:5000/api/Users/${localStorage.id}/addresses/${id}`,
+                method: 'DELETE',
+                data: {
+                    userId: localStorage.id,
+                    addressId: id
+                }
+            })
+            if (result.status === 200) {
+                message.success('Đã xóa địa chỉ!')
+                getaddress()
+                // window.history.push('/information/account')
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+
     }
 
     async function getaddress() {
@@ -130,7 +183,6 @@ function Addresses() {
             let result = await fetchLoading({
                 url: `http://localhost:5000/api/Users/${localStorage.id}/getaddresses`,
                 method: 'GET',
-                // headers: { Authorization: 'Bearer ' + localStorage.token }
             })
             console.log(result)
             let statusProducts = result.status
@@ -171,9 +223,8 @@ function Addresses() {
                     <div className="panel-body">
 
                         <Form.Provider
-                            // onFormFinish={onFormFinish}
                             onFormFinish={name => {
-                                console.log(name)
+                                // console.log(name)
                                 // if (name === 'form0') {
                                 //     // Do something...
                                 //     console.log("form 1")
@@ -220,6 +271,26 @@ function Addresses() {
 
                                                         </>}
 
+                                                </div>
+                                                <div className="row">
+                                                    <div className='col-md-1'></div>
+                                                    <div className='col-md-2'>Mã địa chỉ:</div>
+                                                    <div className='formControl'>
+
+                                                        <Form.Item
+                                                            name={"idAddess"}
+                                                            className='col-md-6'
+                                                            style={{ marginBottom: "20px" }}
+                                                            initialValue={e.id}
+                                                        >
+                                                            <Input
+                                                                disabled
+                                                            // defaultValue={e.deliveryAddress}
+                                                            ></Input>
+                                                        </Form.Item>
+
+                                                    </div>
+                                                    <div />
                                                 </div>
                                                 <div className="row">
                                                     <div className='col-md-1'></div>
@@ -270,7 +341,6 @@ function Addresses() {
                                                             initialValue={cutAddress(e.deliveryAddress)[2]}
                                                         >
                                                             <Input
-
                                                             ></Input>
                                                         </Form.Item>
 
