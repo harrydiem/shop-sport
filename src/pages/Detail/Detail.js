@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import imgAdv from '../../common/assets/images/banners/LHS-banner.jpg'
 import { Rate, message, InputNumber, Select, Button, Form } from 'antd'
 import { fetchLoading } from '../../common/utils/effect'
 import * as actionCarts from '../../actions/actionCarts'
@@ -9,11 +8,11 @@ import { useDispatch, useSelector, } from 'react-redux'
 import { MODULE_NAME as MODULE_CART } from '../../constain/cartConstain'
 function Detail(props) {
     const cartList = useSelector(state => state[MODULE_CART].carts)
-    // const countCart = useSelector(state => state[MODULE_CART].countCart)
     const dispatch = useDispatch()
     const [state, setstate] = useState({})
-    console.log("Detail -> state", state)
+    // console.log("Detail -> state", state)
     const [image, setimage] = useState({ name: '', url: '' })
+    // console.log("Detail -> image", image)
     const [form] = Form.useForm()
     const { Option } = Select;
 
@@ -218,7 +217,6 @@ function Detail(props) {
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
-                console.log(result.data.data)
                 form.setFieldsValue({ selectSize: result.data.data[0] }) //
             } else {
                 message.error("Đã có lỗi xảy ra !")
@@ -237,20 +235,25 @@ function Detail(props) {
             })
             let statusProducts = result.status
             if (statusProducts === 200) {
-
                 setstate(result.data.data)
-                // setimage({
-                //     name: result.data.data.productImages[0].name,
-                //     url: result.data.data.productImages[0].url
-                // })
                 form.setFieldsValue({ selectColor: result.data.data.colors[0].color })
-                // form.setFieldsValue({ selectSize: result.data.data.sizes[0] }) //
-                if (result.data.data.colors[0].color !== '') {
-                    console.log("La quan ao")
+                if (result.data.data.colors[0].color !== '') { //Có color là Áo
+                    setimage({
+                        name: result.data.data.productImages[0].name,
+                        url: result.data.data.productImages[0].url
+                    })
                     await getSize(result.data.data.colors[0].color)
                     await getImageByColor(result.data.data.colors[0].id)
-                } else
+                } else { //Giày ko có color
+                    setimage({
+                        name: result.data.data.productImages[0].name,
+                        url: result.data.data.productImages[0].url,
+                        productImages: result.data.data.productImages
+                    })
                     form.setFieldsValue({ selectSize: result.data.data.sizes[0] })
+                }
+
+
             } else {
                 message.error("Đã có lỗi xảy ra !")
             }
@@ -423,9 +426,8 @@ function Detail(props) {
                                             <div className="col-sm-12">
                                                 <div className="price-box">
                                                     <span className="label" style={{ marginRight: 2, color: "gray", fontSize: 17 }} >GIÁ :</span>
-                                                    <span className="price">{formatNumber(state.currentPrice, '.', '.')} VND</span>
-                                                    <strike className="price-before-discount" style={{ color: '#f75b5b', fontSize: "25px", marginLeft: "20px" }}>{formatNumber(state.price, '.', '.')} VND</strike>
-                                                    {/* <span >$900.00</span> */}
+                                                    <span className="price">{formatNumber(state.currentPrice, '.', '.')} đ</span>
+                                                    {((state.currentPrice === state.price) ? "" : <strike className="price-before-discount" style={{ color: '#f75b5b', fontSize: "25px", marginLeft: "20px" }}>{formatNumber(state.price, '.', '.')} đ</strike>)}
                                                 </div>
                                             </div>
                                         </div>
@@ -440,7 +442,7 @@ function Detail(props) {
 
                                             <div className="row">
                                                 <div className="col-sm-3" style={{ padding: 0 }}>
-                                                    {/* <span className="label" style={{ marginRight: 2 }} >Màu:</span> */}
+                                                    {state.c}
                                                     <Form.Item
                                                         label="Màu :"
                                                         name="selectColor"
@@ -455,6 +457,7 @@ function Detail(props) {
                                                                 : <></>
                                                             }
                                                         </Select>
+
                                                     </Form.Item>
 
 

@@ -18,7 +18,7 @@ import Account from '../pages/Information/Account'
 import Information from '../pages/Information/Information'
 import ChangePass from '../pages/Information/ChangePass'
 import Addresses from '../pages/Information/Addresses'
-import Orders from '../pages/Orders/Orders'
+import Orders from '../pages/Information/Orders'
 // import Checkout2 from '../pages/Checkout/Checkout2'
 
 export class Router extends Component {
@@ -37,7 +37,7 @@ export class Router extends Component {
                                 <Route exact path='/wishlists' component={Wishlists} />
                                 <Route exact path='/checkout' component={Checkout} />
                                 <Route exact path='/myaccount' component={Login} />
-                                <Route exact path='/orders' component={Orders} />
+                                {/* <Route exact path='/orders' component={Orders} /> */}
                                 <Route path='/information/' component={Information}>
                                     <Switch>
                                         <Information>

@@ -1,8 +1,85 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import img1 from "../../common/assets/images/products/p1.jpg"
+import { fetchLoading } from '../../common/utils/effect'
+import { message, Rate } from 'antd'
+import formatNumber from '../../common/utils/formatNumber'
+import { Link } from 'react-router-dom'
 const img = "http://localhost:3000/static/media/gym-black.7695f194.jpg"
 
 function Wishlists() {
+    const [wishlist, setWishlist] = useState()
+    console.log("Wishlists -> wishlist", wishlist)
+    async function getWishlist() {
+        try {
+            let result = await fetchLoading({
+                url: 'http://localhost:5000/api/WishLists/' + localStorage.id,
+                method: 'GET',
+                params: {
+                    userId: localStorage.id
+                }
+            })
+            if (result.status === 200) {
+                setWishlist(result.data.data)
+
+            } else {//Bad Request => 0
+                console.log("Lỗi")
+            }
+        } catch (error) {
+            console.log(error)
+            message.error("Lỗi kết nối đến Server")
+        }
+    }
+    function showWishlist() {
+        let resutl = "";
+        if (wishlist) {
+            resutl = wishlist.map((w, index) => {
+                return (
+                    <tr key={index}>
+                        <td className="col-md-2">
+                            <img src={"http://localhost:5000" + w.productImage.url} alt={w.productName} />
+                        </td>
+                        <td className="col-md-7">
+                            <div className="product-name">
+                                <Link to={'/detail/' + w.productId}  >{w.productName}</Link>
+                            </div>
+                            <div className="rating rateit">
+
+                                <span className="review">( {w.commentCount} Bình luận )</span>
+
+
+                            </div>
+
+                            <div className="price">
+                                {formatNumber(w.currentPrice, ".", ".")} đ
+                                <span>{formatNumber(w.price, ".", ".")} đ</span>
+                            </div>
+                        </td>
+                        <td className="col-md-2">
+                            <Link to={'/detail/' + w.productId} className="btn-upper btn btn-primary">
+                                Xem chi tiết
+                              </Link>
+                        </td>
+                        <td className="col-md-1 close-btn">
+                            <a onClick={() => console.log(w.productId)} >
+                                <i className="fa fa-times" />
+                            </a>
+                        </td>
+                    </tr>
+
+                )
+            })
+        } else {
+            return (<></>)
+
+        }
+        return resutl;
+
+    }
+    useEffect(() => {
+        getWishlist()
+
+    }, [])
+
     return (
         <div className="body-content">
             <div className="container">
@@ -15,132 +92,18 @@ function Wishlists() {
                                         <tr>
                                             <th colSpan={4} className="heading-title">
                                                 My Wishlist
-                </th>
+                                            </th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
-                                        <tr>
-                                            <td className="col-md-2">
-                                                <img src={img1} alt="imga" />
-                                            </td>
-                                            <td className="col-md-7">
-                                                <div className="product-name">
-                                                    <a href=" ">Floral Print Buttoned</a>
-                                                </div>
-                                                <div className="rating rateit">
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star non-rate" />
-                                                    <span className="review">( 06 Reviews )</span>
-                                                    <button
-                                                        id="rateit-reset-2"
-                                                        data-role="none"
-                                                        className="rateit-reset"
-                                                        aria-label="reset rating"
-                                                        aria-controls="rateit-range-2"
-                                                        style={{ display: "none" }}
-                                                    />
-                                                    <div
-                                                        id="rateit-range-2"
-                                                        className="rateit-range"
-                                                        tabIndex={0}
-                                                        role="slider"
-                                                        aria-label="rating"
-                                                        aria-owns="rateit-reset-2"
-                                                        aria-valuemin={0}
-                                                        aria-valuemax={5}
-                                                        aria-valuenow={4}
-                                                        aria-readonly="true"
-                                                        style={{ width: 70, height: 14 }}
-                                                    >
-                                                        <div
-                                                            className="rateit-selected"
-                                                            style={{ height: 14, width: 56 }}
-                                                        />
-                                                        <div className="rateit-hover" style={{ height: 14 }} />
-                                                    </div>
-                                                </div>
-                                                <div className="price">
-                                                    $400.00
-                    <span>$900.00</span>
-                                                </div>
-                                            </td>
-                                            <td className="col-md-2">
-                                                <a href=" " className="btn-upper btn btn-primary">
-                                                    Add to cart
-                  </a>
-                                            </td>
-                                            <td className="col-md-1 close-btn">
-                                                <a href=" " >
-                                                    <i className="fa fa-times" />
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="col-md-2">
-                                                <img src={img} alt="phoro" />
-                                            </td>
-                                            <td className="col-md-7">
-                                                <div className="product-name">
-                                                    <a href=" ">Floral Print Buttoned</a>
-                                                </div>
-                                                <div className="rating rateit">
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star rate" />
-                                                    <i className="fa fa-star non-rate" />
-                                                    <span className="review">( 06 Reviews )</span>
-                                                    <button
-                                                        id="rateit-reset-3"
-                                                        data-role="none"
-                                                        className="rateit-reset"
-                                                        aria-label="reset rating"
-                                                        aria-controls="rateit-range-3"
-                                                        style={{ display: "none" }}
-                                                    />
-                                                    <div
-                                                        id="rateit-range-3"
-                                                        className="rateit-range"
-                                                        tabIndex={0}
-                                                        role="slider"
-                                                        aria-label="rating"
-                                                        aria-owns="rateit-reset-3"
-                                                        aria-valuemin={0}
-                                                        aria-valuemax={5}
-                                                        aria-valuenow={4}
-                                                        aria-readonly="true"
-                                                        style={{ width: 70, height: 14 }}
-                                                    >
-                                                        <div
-                                                            className="rateit-selected"
-                                                            style={{ height: 14, width: 56 }}
-                                                        />
-                                                        <div className="rateit-hover" style={{ height: 14 }} />
-                                                    </div>
-                                                </div>
-                                                <div className="price">
-                                                    $450.00
-                    <span>$900.00</span>
-                                                </div>
-                                            </td>
-                                            <td className="col-md-2" style={{ verticalAlign: "middle" }}>
-                                                <a href=" " className="btn-upper btn btn-default">
-                                                    Add to cart
-                  </a>
-                                            </td>
-                                            <td className="col-md-1 close-btn">
-                                                <a href=" " >
-                                                    <i className="fa fa-times" />
-                                                </a>
-                                            </td>
-                                        </tr>
+                                        {showWishlist()}
+
                                     </tbody>
+
                                 </table>
                             </div>
-                        </div>{" "}
+                        </div>
                     </div>
                     {/* /.row */}
                 </div>

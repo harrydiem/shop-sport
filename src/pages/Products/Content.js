@@ -10,7 +10,7 @@ function Content() {
   return (
     <div className="col-md-9">
       <div className="page-title">
-        <h2>Tiêu đề</h2>
+        <h2>Sản Phẩm</h2>
       </div>
       <div className="clearfix filters-container m-t-10">
         <div className="row">

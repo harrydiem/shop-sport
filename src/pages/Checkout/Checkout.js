@@ -70,7 +70,7 @@ function Checkout() {
                     message.success('Thanh Toán Thành Công')
                     localStorage.setItem('dataCart', JSON.stringify({ countCart: 0 }))
                     dispatch(actionCarts.COUNT_CART(0))
-                    history.push('/orders')
+                    history.push('/information/orders')
                 }
             } catch (error) {
                 console.log(error)

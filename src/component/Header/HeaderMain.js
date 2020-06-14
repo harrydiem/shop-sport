@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 // import Img from '../../common/assets/images/cart.jpg'
 import Logo from '../../common/assets/images/logo3.png'
 import { Link } from 'react-router-dom'
@@ -8,14 +8,28 @@ import { MODULE_NAME as MODULE_USER } from '../../constain/userConstain'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actionCarts from '../../actions/actionCarts'
 import * as actionUser from '../../actions/actionUser'
+import * as actionProducts from '../../actions/actionProducts'
+import { MODULE_NAME as MODULE_PRODUCTS } from '../../constain/productsConstain'
 import { fetchLoading } from '../../common/utils/effect'
 import { message } from 'antd'
+// import { useForm } from 'antd/lib/form/util'
+// import { useForm } from "react-hook-form"
 function HeaderMain() {
   const countCart = useSelector(state => state[MODULE_CART].countCart)
+  const pages_change = useSelector(state => state[MODULE_PRODUCTS].pages)
   const user = useSelector(state => state[MODULE_USER].user)
-  // console.log(user)
+  const [search, setSearch] = useState('')
+  // const { handleSubmit } = useForm()
   const dispatch = useDispatch()
+  const onSubmit = (e) => {
+    e.preventDefault()
+    console.log(search)
+    dispatch(actionProducts.PAGES_CHANGE({ ...pages_change, Keyword: search }))
 
+  }
+  function onChange(e) {
+    console.log(e.target.value)
+  }
   async function getCart() {
     if (user) {
       try {
@@ -65,7 +79,11 @@ function HeaderMain() {
             {/* /.contact-row */}
             {/* ============================================================= SEARCH AREA ============================================================= */}
             <div className="search-area">
-              <form>
+
+              <form
+                // onFinish={onFinish}
+                onSubmit={onSubmit}
+              >
                 <div className="control-group">
                   <ul className="categories-filter animate-dropdown">
                     <li className="dropdown">
@@ -75,35 +93,33 @@ function HeaderMain() {
                         data-toggle="dropdown"
                         href="category.html"
                       >
-                        Categories <b className="caret" />
+                        Tất cả <b className="caret" />
                       </a>
                       <ul className="dropdown-menu" role="menu">
-                        <li className="menu-header">Computer</li>
+
                         <li role="presentation">
-                          <a role="menuitem" tabIndex={-1} href="category.html">
-                            - Clothing
-                </a>
+                          <a role="menuitem" tabIndex={-1} >
+                            - Đồ tập gym
+                         </a>
                         </li>
                         <li role="presentation">
-                          <a role="menuitem" tabIndex={-1} href="category.html">
-                            - Electronics
-                </a>
+                          <a role="menuitem" tabIndex={-1}>
+                            - Đồ tập Yoga
+                       </a>
                         </li>
                         <li role="presentation">
-                          <a role="menuitem" tabIndex={-1} href="category.html">
-                            - Shoes
-                </a>
+                          <a role="menuitem" tabIndex={-1} >
+                            - Đồ Chạy bộ
+                     </a>
                         </li>
-                        <li role="presentation">
-                          <a role="menuitem" tabIndex={-1} href="category.html">
-                            - Watches
-                </a>
-                        </li>
+
                       </ul>
                     </li>
                   </ul>
-                  <input className="search-field" placeholder="Search here..." />
-                  <a className="search-button" href=" " />
+
+                  <input type='text' name="Txtsearch" className="search-field" onChange={(e) => setSearch(e.target.value)} placeholder="Tìm kiếm tại đây ..." />
+                  <button type="submit" className="search-button" style={{ border: "none" }}></button>
+                  {/* <a className="search-field" className="search-button" type="submit" /> */}
                 </div>
               </form>
             </div>
@@ -127,14 +143,10 @@ function HeaderMain() {
                       {(countCart) ? countCart : 0}
                     </span>
                   </div>
-                  <div className="total-price-basket">
-
+                  {/* <div className="total-price-basket">
                     <span className="lbl" />
                     <span className="total-price" />
-
-                    {/* <span className="value">600.000</span>
-                                                <span className="sign">VND</span> */}
-                  </div>
+                  </div> */}
                 </div>
               </Link>
               {/* <ul className="dropdown-menu">

@@ -12,13 +12,12 @@ function Categories() {
   const dispatch = useDispatch()
   const [priceSlider, setpriceSlider] = useState({ MinPrice: 30000, MaxPrice: 3000000 })
   const [categories, setCategories] = useState()
+
   const page = useSelector(state => state[MODULE_PRODUCTS].pages)
   const onChange = e => {
-    // console.log('Change price', e);
     setpriceSlider({ MinPrice: e[0] * 3000000 / 100, MaxPrice: e[1] * 3000000 / 100 })
   }
   const showByPrice = () => {
-    console.log("Categories -> priceSlider", priceSlider)
     dispatch(actionProducts.PAGES_CHANGE({ ...page, MinPrice: priceSlider.MinPrice, MaxPrice: priceSlider.MaxPrice }))
   }
   async function handleClick(value) {
@@ -36,10 +35,8 @@ function Categories() {
     }
     dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: value.key }))//{ ...page, dataLoad: 2 }
     if (value.key === '' || value.key === "0") {//All
-      //  await getProducts()
       dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: '' }))
     } else
-      // await getProductsByCategori(value.key)
       dispatch(actionProducts.PAGES_CHANGE({ ...page, PageIndex: 1, categoryId: value.key }))
   }
 
@@ -54,7 +51,8 @@ function Categories() {
       if (statusProducts === 200) {
         dispatch(actionProducts.FETCH_PRODUCTS(result.data.data))
       } else {
-        console.log(result.data.message)
+        dispatch(actionProducts.FETCH_PRODUCTS({ items: [] }))
+        // console.log(result.data.message)
       }
     } catch (error) {
       console.log(error)

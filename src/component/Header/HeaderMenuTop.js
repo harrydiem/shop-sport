@@ -46,12 +46,12 @@ function Header1() {
                                     GIỎ HÀNG
                                     </Link>
                             </li>
-                            <li>
+                            {/* <li>
                                 <Link to="/orders">
                                     <i className="icon fa fa-check" />
                                         ĐƠN HÀNG
                                    </Link>
-                            </li>
+                            </li> */}
                             {(localStorage.id)
                                 ?
                                 <li>
