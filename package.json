@@ -7,7 +7,7 @@
     "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.7.0",
     "antd": "^4.2.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "history": "^4.10.1",
     "password-hash": "^1.2.2",
     "react": "^16.9.0",
